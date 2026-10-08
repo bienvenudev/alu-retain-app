@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# Local IDE and OS files
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+
+# Backend/local database files
+backend/.venv/
+backend/__pycache__/
+backend/.env
+
