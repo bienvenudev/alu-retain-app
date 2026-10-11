@@ -1,6 +1,12 @@
 import { Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 
+import { AuthForm } from './auth/AuthForm'
+import { useAuth } from './auth/AuthContext'
+import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
+
 function AppLayout() {
+  const { signOut, user } = useAuth()
+
   return (
     <div className="app-layout">
       <header className="app-header">
@@ -13,6 +19,12 @@ function AppLayout() {
           <NavLink to="/budget">Budget</NavLink>
           <NavLink to="/admin">Admin</NavLink>
         </nav>
+        <div className="session-controls">
+          <span>{user?.name}</span>
+          <button onClick={signOut} type="button">
+            Sign out
+          </button>
+        </div>
       </header>
       <main className="page-content">
         <Outlet />
@@ -74,21 +86,11 @@ function AdminPage() {
 }
 
 function SignInPage() {
-  return (
-    <PagePlaceholder
-      description="Sign-in will be connected to the authentication context in the next step."
-      title="Sign in"
-    />
-  )
+  return <AuthForm mode="signin" />
 }
 
 function SignUpPage() {
-  return (
-    <PagePlaceholder
-      description="Create-account form and validation will be added with authentication."
-      title="Sign up"
-    />
-  )
+  return <AuthForm mode="signup" />
 }
 
 function NotFoundPage() {
@@ -107,12 +109,16 @@ function NotFoundPage() {
 export function App() {
   return (
     <Routes>
-      <Route element={<AppLayout />} path="/">
-        <Route element={<DashboardPage />} index />
-        <Route element={<DashboardPage />} path="dashboard" />
-        <Route element={<ExpensesPage />} path="expenses" />
-        <Route element={<BudgetPage />} path="budget" />
-        <Route element={<AdminPage />} path="admin" />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />} path="/">
+          <Route element={<DashboardPage />} index />
+          <Route element={<DashboardPage />} path="dashboard" />
+          <Route element={<ExpensesPage />} path="expenses" />
+          <Route element={<BudgetPage />} path="budget" />
+          <Route element={<AdminRoute />}>
+            <Route element={<AdminPage />} path="admin" />
+          </Route>
+        </Route>
       </Route>
       <Route element={<SignInPage />} path="/signin" />
       <Route element={<SignUpPage />} path="/signup" />

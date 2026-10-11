@@ -32,7 +32,7 @@ body {
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
   padding: 1rem clamp(1rem, 5vw, 4rem);
   border-bottom: 1px solid #e1e7ef;
@@ -50,6 +50,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-left: auto;
 }
 
 .main-nav a {
@@ -80,6 +81,103 @@ body {
   border-radius: 1.25rem;
   background: #ffffff;
   box-shadow: 0 1rem 3rem rgb(23 32 42 / 8%);
+}
+
+.session-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1rem;
+  color: #5f6b7a;
+  font-size: 0.875rem;
+}
+
+button {
+  border: 0;
+  border-radius: 0.5rem;
+  background: #4055bd;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.65rem 1rem;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.route-status {
+  padding: 2rem;
+  text-align: center;
+}
+
+.auth-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.auth-card {
+  width: min(100%, 28rem);
+  padding: 2.5rem;
+  border: 1px solid #e1e7ef;
+  border-radius: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 1rem 3rem rgb(23 32 42 / 8%);
+}
+
+.auth-description {
+  color: #5f6b7a;
+  line-height: 1.5;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: #344054;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  color: #17202a;
+  font: inherit;
+}
+
+.auth-form input:focus {
+  border-color: #5570d9;
+  outline: 3px solid #eef1ff;
+}
+
+.form-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+
+.auth-switch {
+  margin: 1.5rem 0 0;
+  color: #5f6b7a;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #4055bd;
+  font-weight: 700;
 }
 
 .eyebrow {
@@ -114,6 +212,14 @@ h1 {
   .app-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .main-nav {
+    margin-left: 0;
+  }
+
+  .session-controls {
+    margin-left: 0;
   }
 
   .page-content {
