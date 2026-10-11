@@ -14,3 +14,5 @@ backend/.venv/
 backend/__pycache__/
 backend/.env
 
+# Local agent guidance: polish and commit only at project completion
+AGENTS.md
