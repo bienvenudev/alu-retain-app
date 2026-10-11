@@ -7,5 +7,4 @@ The application will support expense tracking, monthly budgets, spending summari
 ## Project structure
 
 - `frontend/` - React, TypeScript, and Vite frontend
-- `backend/` - Node.js and Express API (to be added)
-
+- `backend/` - Node.js, Express, and TypeScript API
