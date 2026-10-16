@@ -14,8 +14,9 @@ npm run build    # type-check and build for production
 The API must be running (default `http://localhost:3000`). To point at a different
 API, copy `.env.example` to `.env` and set `VITE_API_BASE_URL`.
 
-Sign up creates a normal user. The administrator is created by the backend seed
-(`ADMIN_EMAIL` / `ADMIN_PASSWORD` in `backend/.env`).
+Sign up creates a normal user. The backend seed can also create an administrator and
+a demo user with sample data (`ADMIN_*` and `DEMO_*` in `backend/.env`); see the root
+README for the local credentials.
 
 ## How it is organized
 

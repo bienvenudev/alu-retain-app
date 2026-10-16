@@ -40,6 +40,8 @@ cp .env.example .env     # then fill in the values below
 | `JWT_EXPIRES_IN_SECONDS` | Token lifetime (default 7 days)                                  |
 | `ADMIN_EMAIL`            | Admin account created by `npm run db:seed` (optional)            |
 | `ADMIN_PASSWORD`         | Password for that admin account (optional)                       |
+| `DEMO_EMAIL`             | Demo user created by `npm run db:seed` with sample data (optional) |
+| `DEMO_PASSWORD`          | Password for the demo user (optional)                            |
 
 The API refuses to start if the configuration is invalid.
 
@@ -49,7 +51,7 @@ Point `DATABASE_URL` at `retain_migrator` for this step:
 
 ```bash
 npx prisma migrate deploy                            # create the tables
-npm run db:seed                                      # default categories and the admin user
+npm run db:seed                                      # categories, admin, and optional demo user
 psql "$DATABASE_URL" -f prisma/app-role-grants.sql   # once: let retain_app read and write
 ```
 
@@ -61,9 +63,14 @@ npm run build    # compile to dist/
 npm start        # run the compiled build
 ```
 
-`GET /api/health` answers `{ "status": "ok" }`. The seed creates `Uncategorized` plus a
-few common categories, and the admin user if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are
-set. Re-running it never changes an existing account.
+`GET /api/health` answers `{ "status": "ok" }`.
+
+The seed creates `Uncategorized` plus a few common categories. It also creates the
+admin user if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, and a demo user if
+`DEMO_EMAIL` and `DEMO_PASSWORD` are set. The demo user comes with about 20 sample
+expenses (in RWF, spread over three months) and budgets for this and last month,
+dated relative to the day you seed. Re-running the seed never changes an existing
+account or its data. Skip both variables in production.
 
 ## API reference
 

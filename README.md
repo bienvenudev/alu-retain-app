@@ -47,5 +47,14 @@ You need Node.js 22 and a running PostgreSQL server.
    npm run dev
    ```
 
-3. Open <http://localhost:5173> and create an account. The administrator account is
-   created by the backend seed from `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+3. Open <http://localhost:5173> and sign up, or use an account created by the
+   backend seed:
+
+   | Role  | Email              | Password    |
+   | ----- | ------------------ | ----------- |
+   | User  | `demo@retain.app`  | `demo1234`  |
+   | Admin | `admin@retain.app` | `admin1234` |
+
+   These come from `DEMO_EMAIL` / `DEMO_PASSWORD` and `ADMIN_EMAIL` /
+   `ADMIN_PASSWORD` in `backend/.env` and are for local development only. The demo
+   user has sample expenses and budgets; a new sign-up starts empty.
