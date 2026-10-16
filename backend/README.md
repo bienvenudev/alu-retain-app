@@ -39,6 +39,10 @@ cp .env.example .env     # then fill in the values below
 | `JWT_SECRET`             | Token signing secret, at least 32 characters (required)          |
 | `JWT_EXPIRES_IN_SECONDS` | Token lifetime (default 7 days)                                  |
 | `AUTH_RATE_LIMIT_MAX`    | Sign-in and sign-up attempts per address per 15 minutes (default 30) |
+| `API_RATE_LIMIT_MAX`     | All API requests per address per 15 minutes (default 600)        |
+| `MAX_EXPENSES_PER_USER`  | Expenses one user may keep (default 2000)                        |
+| `MAX_CATEGORIES`         | Categories allowed in total (default 100)                        |
+| `MAX_USERS`              | Registered accounts allowed in total (default 500)               |
 | `ADMIN_EMAIL`            | Admin account created by `npm run db:seed` (optional)            |
 | `ADMIN_PASSWORD`         | Password for that admin account (optional)                       |
 | `DEMO_EMAIL`             | Demo user created by `npm run db:seed` with sample data (optional) |
@@ -66,8 +70,15 @@ npm start        # run the compiled build
 
 `GET /api/health` answers `{ "status": "ok" }` without touching the database, so it is
 safe for uptime monitors. `GET /api/health/db` also runs a query and answers `503` if
-the database is unreachable. Sign-in and sign-up are rate limited per address (`429`
-when exceeded), and responses carry the standard Helmet security headers.
+the database is unreachable. Responses carry the standard Helmet security headers.
+
+### Abuse protection
+
+The API is public and the database is small, so it limits what one client can do:
+requests are rate limited per address (`429`; stricter for sign-in and sign-up, and
+health checks are exempt), and there are caps on expenses per user (`403`), total
+categories (`409`), and total registered accounts (`503`, sign-ups only). The defaults
+are in the table above and can be changed with environment variables.
 
 The seed creates `Uncategorized` plus a few common categories. It also creates the
 admin user if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, and a demo user if

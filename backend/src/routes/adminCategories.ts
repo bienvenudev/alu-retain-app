@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
+import { env } from '../config/env.js'
 import { prisma } from '../db/prisma.js'
 import { UNCATEGORIZED_NAME } from '../lib/domain.js'
 import { HttpError } from '../lib/errors.js'
@@ -58,6 +59,10 @@ adminCategoriesRouter.get('/', async (_request, response) => {
 adminCategoriesRouter.post('/', async (request, response) => {
   const { name } = categoryInputSchema.parse(request.body)
   await assertNameAvailable(name)
+
+  if ((await prisma.category.count()) >= env.MAX_CATEGORIES) {
+    throw new HttpError(409, `The limit of ${env.MAX_CATEGORIES} categories has been reached.`)
+  }
 
   try {
     const category = await prisma.category.create({

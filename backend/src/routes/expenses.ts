@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
+import { env } from '../config/env.js'
 import { prisma } from '../db/prisma.js'
 import { PAYMENT_METHODS } from '../lib/domain.js'
 import { HttpError } from '../lib/errors.js'
@@ -145,6 +146,13 @@ expensesRouter.post('/', async (request, response) => {
   const userId = getUserId(request)
   const input = expenseInputSchema.parse(request.body)
   await assertCategoryExists(input.categoryId)
+
+  if ((await prisma.expense.count({ where: { userId } })) >= env.MAX_EXPENSES_PER_USER) {
+    throw new HttpError(
+      403,
+      `You have reached the limit of ${env.MAX_EXPENSES_PER_USER.toLocaleString('en-US')} expenses. Delete some to add more.`,
+    )
+  }
 
   const expense = await prisma.expense.create({
     data: { ...input, expenseDate: toUtcDate(input.expenseDate), userId },

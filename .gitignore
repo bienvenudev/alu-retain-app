@@ -12,3 +12,4 @@ dist/
 
 # Local agent guidance: polish and commit only at project completion
 CLAUDE.md
+.claude/

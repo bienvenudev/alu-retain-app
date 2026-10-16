@@ -5,6 +5,7 @@ import helmet from 'helmet'
 import { env } from './config/env.js'
 import { prisma } from './db/prisma.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
+import { apiLimiter } from './middleware/rateLimits.js'
 import { adminRouter } from './routes/admin.js'
 import { authRouter } from './routes/auth.js'
 import { budgetsRouter } from './routes/budgets.js'
@@ -42,6 +43,7 @@ export function createApp() {
         .json({ error: { message: 'The database is unavailable.' } })
     }
   })
+  app.use('/api', apiLimiter)
   app.use('/api/auth', authRouter)
   app.use('/api/categories', categoriesRouter)
   app.use('/api/expenses', expensesRouter)
