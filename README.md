@@ -4,6 +4,22 @@ Retain is a personal expense and monthly budget manager. Users record their
 expenses, set a budget for each month, and see how their spending compares. An
 administrator manages expense categories and sees platform-wide insights.
 
+## Live demo
+
+- **App:** <https://alu-retain-app-seven.vercel.app>
+- **API:** <https://retain-api-w0lz.onrender.com/api> (health check: `/api/health`)
+
+| Role  | Email              | Password    | Notes                                         |
+| ----- | ------------------ | ----------- | --------------------------------------------- |
+| User  | `demo@retain.app`  | `demo1234`  | Comes with sample expenses and budgets        |
+| Admin | `admin@retain.app` | `admin1234` | Category management and platform insights     |
+
+You can also sign up for a new account, which starts empty.
+
+The API runs on a free plan that goes to sleep after 15 minutes without traffic. The
+first request after a quiet period can take up to a minute while it wakes up; the
+app shows a notice while it waits.
+
 ## Features
 
 - Sign up and sign in; protected pages for signed-in users and an admin-only area
@@ -58,3 +74,36 @@ You need Node.js 22 and a running PostgreSQL server.
    These come from `DEMO_EMAIL` / `DEMO_PASSWORD` and `ADMIN_EMAIL` /
    `ADMIN_PASSWORD` in `backend/.env` and are for local development only. The demo
    user has sample expenses and budgets; a new sign-up starts empty.
+
+## Deployment
+
+| Part     | Host                                              | Notes                                   |
+| -------- | ------------------------------------------------- | --------------------------------------- |
+| Frontend | Vercel                                            | Static Vite build                       |
+| API      | Render (free web service)                         | Node and Express                        |
+| Database | Neon (free PostgreSQL)                            | Use the direct (non-pooled) connection string |
+
+**Database (Neon).** Create a project, copy the direct connection string, then from
+`backend/` run the migrations and seed against it (see the [backend README](./backend/README.md)):
+
+```bash
+DATABASE_URL='<neon-url>' npx prisma migrate deploy
+DATABASE_URL='<neon-url>' ADMIN_EMAIL=... ADMIN_PASSWORD=... DEMO_EMAIL=... DEMO_PASSWORD=... npm run db:seed
+```
+
+**API (Render).** A web service from this repository with these settings:
+
+| Setting           | Value                                                                    |
+| ----------------- | ------------------------------------------------------------------------ |
+| Root directory    | `backend`                                                                |
+| Build command     | `npm ci --include=dev && npm run build && npx prisma migrate deploy`     |
+| Start command     | `npm start`                                                              |
+| Health check path | `/api/health`                                                            |
+| Environment       | `DATABASE_URL`, `JWT_SECRET` (a new random value), `FRONTEND_ORIGIN` (the frontend URL, no trailing slash) |
+
+Migrations run on every deploy as part of the build. Point an uptime monitor at
+`/api/health` (it never touches the database) if you want to keep the service awake.
+
+**Frontend (Vercel).** A project from this repository with root directory `frontend`
+and the environment variable `VITE_API_BASE_URL` set to the API address ending in
+`/api`. `frontend/vercel.json` makes page refreshes on routes like `/expenses` work.
