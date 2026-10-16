@@ -1,7 +1,10 @@
 import { type PropsWithChildren, useCallback } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { ExpenseForm } from '../components/expenses/ExpenseForm'
+import { Button, ButtonLink } from '../components/ui/Button'
+import { ErrorMessage } from '../components/ui/ErrorMessage'
+import { PageCard, PageHeader } from '../components/ui/PageCard'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { useCategories } from '../hooks/useCategories'
 import {
@@ -13,25 +16,22 @@ import type { ExpenseInput } from '../types/domain'
 
 function FormShell({ children, title }: PropsWithChildren<{ title: string }>) {
   return (
-    <section className="page-card">
-      <p className="eyebrow">Retain</p>
-      <h1>{title}</h1>
+    <PageCard>
+      <PageHeader title={title} />
       {children}
-    </section>
+    </PageCard>
   )
 }
 
 function LoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="mt-6" role="alert">
-      <p className="form-error">{message}</p>
+    <div className="mt-6 grid gap-3">
+      <ErrorMessage>{message}</ErrorMessage>
       <div className="flex flex-wrap gap-2">
-        <button onClick={onRetry} type="button">
-          Try again
-        </button>
-        <Link className="btn btn-secondary" to="/expenses">
+        <Button onClick={onRetry}>Try again</Button>
+        <ButtonLink to="/expenses" variant="secondary">
           Back to expenses
-        </Link>
+        </ButtonLink>
       </div>
     </div>
   )
@@ -51,7 +51,7 @@ export function NewExpensePage() {
   return (
     <FormShell title="Add expense">
       {categories.state.status === 'loading' && (
-        <p aria-live="polite" role="status">
+        <p aria-live="polite" className="mt-6 text-slate-600" role="status">
           Loading…
         </p>
       )}
@@ -105,7 +105,7 @@ export function EditExpensePage() {
       {!error &&
         (expense.state.status === 'loading' ||
           categories.state.status === 'loading') && (
-          <p aria-live="polite" role="status">
+          <p aria-live="polite" className="mt-6 text-slate-600" role="status">
             Loading…
           </p>
         )}

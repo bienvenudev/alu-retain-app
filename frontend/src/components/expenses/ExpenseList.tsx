@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
-
 import { formatDate, formatMoney } from '../../lib/format'
 import { type Expense, PAYMENT_METHOD_LABELS } from '../../types/domain'
+import { Button, ButtonLink } from '../ui/Button'
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -17,21 +16,22 @@ function RowActions({
 }) {
   return (
     <div className="flex justify-end gap-2">
-      <Link
+      <ButtonLink
         aria-label={`Edit ${expense.title}`}
-        className="btn btn-secondary btn-sm"
+        size="sm"
         to={`/expenses/${expense.id}/edit`}
+        variant="secondary"
       >
         Edit
-      </Link>
-      <button
+      </ButtonLink>
+      <Button
         aria-label={`Delete ${expense.title}`}
-        className="btn-danger btn-sm"
         onClick={() => onDelete(expense)}
-        type="button"
+        size="sm"
+        variant="danger"
       >
         Delete
-      </button>
+      </Button>
     </div>
   )
 }

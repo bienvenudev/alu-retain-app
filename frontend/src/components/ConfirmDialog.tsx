@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react'
 
+import { Button } from './ui/Button'
+import { ErrorMessage } from './ui/ErrorMessage'
+
 interface ConfirmDialogProps {
   confirmLabel: string
   error: string | null
@@ -35,7 +38,7 @@ export function ConfirmDialog({
   return (
     <dialog
       aria-labelledby="confirm-dialog-title"
-      className="w-[min(92vw,24rem)] rounded-xl p-6 backdrop:bg-black/40"
+      className="m-auto w-[min(92vw,24rem)] rounded-xl p-6 backdrop:bg-black/40"
       onCancel={(event) => {
         event.preventDefault()
 
@@ -49,28 +52,14 @@ export function ConfirmDialog({
         {title}
       </h2>
       <p className="mt-2 text-slate-600">{message}</p>
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       <div className="mt-5 flex justify-end gap-2">
-        <button
-          className="btn-secondary"
-          disabled={isBusy}
-          onClick={onCancel}
-          type="button"
-        >
+        <Button disabled={isBusy} onClick={onCancel} variant="secondary">
           Cancel
-        </button>
-        <button
-          className="btn-danger"
-          disabled={isBusy}
-          onClick={onConfirm}
-          type="button"
-        >
+        </Button>
+        <Button disabled={isBusy} onClick={onConfirm} variant="danger">
           {isBusy ? 'Deleting…' : confirmLabel}
-        </button>
+        </Button>
       </div>
     </dialog>
   )

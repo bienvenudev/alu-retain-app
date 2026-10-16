@@ -11,11 +11,11 @@ export function FormField({
   label,
 }: PropsWithChildren<FormFieldProps>) {
   return (
-    <label>
+    <label className="grid gap-1.5 text-sm font-bold text-slate-700">
       {label}
       {children}
       {error && (
-        <span className="field-error" role="alert">
+        <span className="text-xs font-semibold text-red-700" role="alert">
           {error}
         </span>
       )}

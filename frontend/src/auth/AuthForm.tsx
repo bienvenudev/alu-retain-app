@@ -1,6 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+import { FormField } from '../components/FormField'
+import { fieldClass } from '../components/fieldStyles'
+import { Button } from '../components/ui/Button'
+import { ErrorMessage } from '../components/ui/ErrorMessage'
+import { PageHeader } from '../components/ui/PageCard'
 import { useAuth } from './AuthContext'
 
 interface AuthFormProps {
@@ -63,64 +68,62 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-card">
-        <p className="eyebrow">Retain</p>
-        <h1>{isSignUp ? 'Create your account' : 'Welcome back'}</h1>
-        <p className="auth-description">
+    <main className="grid min-h-screen place-items-center p-6">
+      <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-10">
+        <PageHeader title={isSignUp ? 'Create your account' : 'Welcome back'} />
+        <p className="mt-5 leading-relaxed text-slate-600">
           {isSignUp
             ? 'Start tracking your spending in one place.'
             : 'Sign in to manage your expenses and budget.'}
         </p>
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="mt-7 grid gap-4" onSubmit={handleSubmit}>
           {isSignUp && (
-            <label>
-              Name
+            <FormField label="Name">
               <input
                 autoComplete="name"
+                className={fieldClass}
                 onChange={(event) => setName(event.target.value)}
                 required
                 value={name}
               />
-            </label>
+            </FormField>
           )}
-          <label>
-            Email
+          <FormField label="Email">
             <input
               autoComplete="email"
+              className={fieldClass}
               onChange={(event) => setEmail(event.target.value)}
               required
               type="email"
               value={email}
             />
-          </label>
-          <label>
-            Password
+          </FormField>
+          <FormField label="Password">
             <input
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
+              className={fieldClass}
               minLength={6}
               onChange={(event) => setPassword(event.target.value)}
               required
               type="password"
               value={password}
             />
-          </label>
-          {error && (
-            <p aria-live="polite" className="form-error" role="alert">
-              {error}
-            </p>
-          )}
-          <button disabled={isSubmitting} type="submit">
+          </FormField>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <Button disabled={isSubmitting} type="submit">
             {isSubmitting
               ? 'Please wait…'
               : isSignUp
                 ? 'Create account'
                 : 'Sign in'}
-          </button>
+          </Button>
         </form>
-        <p className="auth-switch">
+        <p className="mt-6 text-center text-sm text-slate-500">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <Link to={isSignUp ? '/signin' : '/signup'}>
+          <Link
+            className="font-bold text-indigo-700"
+            to={isSignUp ? '/signin' : '/signup'}
+          >
             {isSignUp ? 'Sign in' : 'Sign up'}
           </Link>
         </p>

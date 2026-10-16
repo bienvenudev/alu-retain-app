@@ -3,32 +3,56 @@ import { Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { AuthForm } from './auth/AuthForm'
 import { useAuth } from './auth/AuthContext'
 import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
+import { Button } from './components/ui/Button'
+import { PageCard, PageHeader } from './components/ui/PageCard'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
+
+function navLinkClass({ isActive }: { isActive: boolean }) {
+  return `rounded-lg px-3 py-2 text-sm no-underline ${
+    isActive
+      ? 'bg-indigo-50 text-indigo-700'
+      : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-700'
+  }`
+}
 
 function AppLayout() {
   const { signOut, user } = useAuth()
 
   return (
-    <div className="app-layout">
-      <header className="app-header">
-        <Link className="brand" to="/dashboard">
+    <div className="min-h-screen">
+      <header className="flex flex-col items-start gap-4 border-b border-slate-200 bg-white px-[clamp(1rem,5vw,4rem)] py-4 sm:flex-row sm:items-center">
+        <Link
+          className="text-xl font-extrabold text-slate-900 no-underline"
+          to="/dashboard"
+        >
           Retain
         </Link>
-        <nav aria-label="Main navigation" className="main-nav">
-          <NavLink to="/dashboard">Dashboard</NavLink>
-          <NavLink to="/expenses">Expenses</NavLink>
-          <NavLink to="/budget">Budget</NavLink>
-          <NavLink to="/admin">Admin</NavLink>
+        <nav
+          aria-label="Main navigation"
+          className="flex flex-wrap gap-2 sm:ml-auto"
+        >
+          <NavLink className={navLinkClass} to="/dashboard">
+            Dashboard
+          </NavLink>
+          <NavLink className={navLinkClass} to="/expenses">
+            Expenses
+          </NavLink>
+          <NavLink className={navLinkClass} to="/budget">
+            Budget
+          </NavLink>
+          <NavLink className={navLinkClass} to="/admin">
+            Admin
+          </NavLink>
         </nav>
-        <div className="session-controls">
+        <div className="flex items-center gap-3 text-sm text-slate-500 sm:ml-4">
           <span>{user?.name}</span>
-          <button onClick={signOut} type="button">
+          <Button onClick={signOut} size="sm" variant="secondary">
             Sign out
-          </button>
+          </Button>
         </div>
       </header>
-      <main className="page-content">
+      <main className="grid min-h-[calc(100vh-8rem)] place-items-center p-6 sm:min-h-[calc(100vh-4.5rem)]">
         <Outlet />
       </main>
     </div>
@@ -43,11 +67,10 @@ function PagePlaceholder({
   title: string
 }) {
   return (
-    <section className="page-card">
-      <p className="eyebrow">Retain</p>
-      <h1>{title}</h1>
-      <p>{description}</p>
-    </section>
+    <PageCard>
+      <PageHeader title={title} />
+      <p className="mt-5 leading-relaxed text-slate-600">{description}</p>
+    </PageCard>
   )
 }
 
@@ -88,14 +111,20 @@ function SignUpPage() {
 
 function NotFoundPage() {
   return (
-    <section className="page-card">
-      <p className="eyebrow">404</p>
-      <h1>Page not found</h1>
-      <p>The page you requested does not exist.</p>
-      <Link className="text-link" to="/dashboard">
-        Return to dashboard
-      </Link>
-    </section>
+    <main className="grid min-h-screen place-items-center p-6">
+      <PageCard>
+        <PageHeader eyebrow="404" title="Page not found" />
+        <p className="mt-5 text-slate-600">
+          The page you requested does not exist.
+        </p>
+        <Link
+          className="mt-6 inline-block font-bold text-indigo-700"
+          to="/dashboard"
+        >
+          Return to dashboard
+        </Link>
+      </PageCard>
+    </main>
   )
 }
 

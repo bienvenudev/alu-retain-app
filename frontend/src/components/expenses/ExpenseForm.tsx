@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
 
 import {
   type ExpenseFormValues,
@@ -15,6 +14,9 @@ import {
   PAYMENT_METHODS,
 } from '../../types/domain'
 import { FormField } from '../FormField'
+import { fieldClass } from '../fieldStyles'
+import { Button, ButtonLink } from '../ui/Button'
+import { ErrorMessage } from '../ui/ErrorMessage'
 
 interface ExpenseFormProps {
   categories: Category[]
@@ -50,9 +52,10 @@ export function ExpenseForm({
   })
 
   return (
-    <form className="auth-form" noValidate onSubmit={submit}>
+    <form className="mt-7 grid gap-4" noValidate onSubmit={submit}>
       <FormField error={errors.title?.message} label="Title">
         <input
+          className={fieldClass}
           aria-invalid={errors.title ? true : undefined}
           {...register('title')}
         />
@@ -61,7 +64,8 @@ export function ExpenseForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField error={errors.amount?.message} label="Amount">
           <input
-            aria-invalid={errors.amount ? true : undefined}
+            className={fieldClass}
+          aria-invalid={errors.amount ? true : undefined}
             inputMode="decimal"
             placeholder="0.00"
             {...register('amount')}
@@ -69,7 +73,8 @@ export function ExpenseForm({
         </FormField>
         <FormField error={errors.expenseDate?.message} label="Date">
           <input
-            aria-invalid={errors.expenseDate ? true : undefined}
+            className={fieldClass}
+          aria-invalid={errors.expenseDate ? true : undefined}
             type="date"
             {...register('expenseDate')}
           />
@@ -79,7 +84,8 @@ export function ExpenseForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField error={errors.categoryId?.message} label="Category">
           <select
-            aria-invalid={errors.categoryId ? true : undefined}
+            className={fieldClass}
+          aria-invalid={errors.categoryId ? true : undefined}
             {...register('categoryId')}
           >
             <option value="">Select a category</option>
@@ -91,7 +97,7 @@ export function ExpenseForm({
           </select>
         </FormField>
         <FormField error={errors.paymentMethod?.message} label="Payment method">
-          <select {...register('paymentMethod')}>
+          <select className={fieldClass} {...register('paymentMethod')}>
             {PAYMENT_METHODS.map((method) => (
               <option key={method} value={method}>
                 {PAYMENT_METHOD_LABELS[method]}
@@ -102,26 +108,22 @@ export function ExpenseForm({
       </div>
 
       <FormField error={errors.description?.message} label="Description">
-        <input {...register('description')} />
+        <input className={fieldClass} {...register('description')} />
       </FormField>
 
       <FormField error={errors.notes?.message} label="Notes">
-        <textarea rows={3} {...register('notes')} />
+        <textarea className={fieldClass} rows={3} {...register('notes')} />
       </FormField>
 
-      {apiError && (
-        <p className="form-error" role="alert">
-          {apiError}
-        </p>
-      )}
+      {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
 
       <div className="flex flex-wrap gap-2">
-        <button disabled={isSubmitting} type="submit">
+        <Button disabled={isSubmitting} type="submit">
           {isSubmitting ? 'Saving…' : submitLabel}
-        </button>
-        <Link className="btn btn-secondary" to="/expenses">
+        </Button>
+        <ButtonLink to="/expenses" variant="secondary">
           Cancel
-        </Link>
+        </ButtonLink>
       </div>
     </form>
   )
