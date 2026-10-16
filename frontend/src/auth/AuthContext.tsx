@@ -7,6 +7,8 @@ import {
   useState,
 } from 'react'
 
+import { currentUserStorageKey, usersStorageKey } from './storageKeys'
+
 export type UserRole = 'user' | 'admin'
 
 export interface AuthUser {
@@ -31,8 +33,23 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-const currentUserStorageKey = 'retain.currentUser'
-const usersStorageKey = 'retain.users'
+// Temporary demo accounts so every role can be tried before the API exists.
+const demoUsers: StoredUser[] = [
+  {
+    email: 'demo@retain.app',
+    id: 'user-demo',
+    name: 'Demo User',
+    password: 'demo1234',
+    role: 'user',
+  },
+  {
+    email: 'admin@retain.app',
+    id: 'user-admin',
+    name: 'Demo Admin',
+    password: 'admin1234',
+    role: 'admin',
+  },
+]
 
 function getStoredUsers(): StoredUser[] {
   const value = localStorage.getItem(usersStorageKey)
@@ -53,6 +70,10 @@ function getStoredUsers(): StoredUser[] {
     localStorage.removeItem(usersStorageKey)
     return []
   }
+}
+
+function getAllUsers(): StoredUser[] {
+  return [...demoUsers, ...getStoredUsers()]
 }
 
 function isStoredUser(value: unknown): value is StoredUser {
@@ -122,7 +143,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isLoading,
       signIn: async (email, password) => {
         const normalizedEmail = normalizeEmail(email)
-        const storedUser = getStoredUsers().find(
+        const storedUser = getAllUsers().find(
           (candidate) => candidate.email === normalizedEmail,
         )
 
@@ -145,7 +166,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const normalizedEmail = normalizeEmail(email)
         const users = getStoredUsers()
 
-        if (users.some((candidate) => candidate.email === normalizedEmail)) {
+        if (getAllUsers().some((candidate) => candidate.email === normalizedEmail)) {
           throw new Error('An account with this email already exists.')
         }
 

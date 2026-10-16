@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { AuthForm } from './auth/AuthForm'
 import { useAuth } from './auth/AuthContext'
 import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
+import { ExpensesPage } from './pages/ExpensesPage'
 
 function AppLayout() {
   const { signOut, user } = useAuth()
@@ -54,15 +55,6 @@ function DashboardPage() {
     <PagePlaceholder
       description="Your monthly spending summary and recent expenses will appear here."
       title="Dashboard"
-    />
-  )
-}
-
-function ExpensesPage() {
-  return (
-    <PagePlaceholder
-      description="Create, view, edit, and delete your personal expenses here."
-      title="Expenses"
     />
   )
 }

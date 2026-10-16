@@ -1,0 +1,37 @@
+{
+  "categories": [
+    { "id": "cat-uncategorized", "name": "Uncategorized" },
+    { "id": "cat-food", "name": "Food & Dining" },
+    { "id": "cat-transport", "name": "Transport" },
+    { "id": "cat-housing", "name": "Housing" },
+    { "id": "cat-utilities", "name": "Utilities" },
+    { "id": "cat-entertainment", "name": "Entertainment" },
+    { "id": "cat-health", "name": "Health" },
+    { "id": "cat-shopping", "name": "Shopping" }
+  ],
+  "expenses": [
+    { "userId": "user-demo", "categoryId": "cat-housing", "title": "Monthly rent", "amount": "450.00", "paymentMethod": "bank_transfer", "daysAgo": 2, "description": "Apartment rent", "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-food", "title": "Grocery run", "amount": "62.40", "paymentMethod": "card", "daysAgo": 0, "description": null, "notes": "Weekly groceries" },
+    { "userId": "user-demo", "categoryId": "cat-transport", "title": "Bus pass", "amount": "30.00", "paymentMethod": "cash", "daysAgo": 1, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-utilities", "title": "Electricity bill", "amount": "48.75", "paymentMethod": "mobile_money", "daysAgo": 3, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-entertainment", "title": "Movie night", "amount": "18.00", "paymentMethod": "card", "daysAgo": 4, "description": "Two tickets", "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-food", "title": "Lunch with team", "amount": "24.50", "paymentMethod": "card", "daysAgo": 5, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-health", "title": "Pharmacy", "amount": "15.20", "paymentMethod": "cash", "daysAgo": 6, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-shopping", "title": "Running shoes", "amount": "89.99", "paymentMethod": "card", "daysAgo": 8, "description": null, "notes": "Sale item" },
+    { "userId": "user-demo", "categoryId": "cat-food", "title": "Coffee beans", "amount": "14.00", "paymentMethod": "mobile_money", "daysAgo": 9, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-transport", "title": "Taxi to airport", "amount": "35.00", "paymentMethod": "cash", "daysAgo": 11, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-utilities", "title": "Internet", "amount": "40.00", "paymentMethod": "bank_transfer", "daysAgo": 13, "description": "Monthly fibre plan", "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-uncategorized", "title": "Gift for a friend", "amount": "25.00", "paymentMethod": "cash", "daysAgo": 15, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-housing", "title": "Rent (last month)", "amount": "450.00", "paymentMethod": "bank_transfer", "daysAgo": 32, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-food", "title": "Groceries", "amount": "71.10", "paymentMethod": "card", "daysAgo": 35, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-entertainment", "title": "Streaming subscription", "amount": "12.99", "paymentMethod": "card", "daysAgo": 38, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-health", "title": "Dentist visit", "amount": "80.00", "paymentMethod": "card", "daysAgo": 41, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-transport", "title": "Fuel", "amount": "45.00", "paymentMethod": "cash", "daysAgo": 44, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-shopping", "title": "Backpack", "amount": "55.00", "paymentMethod": "card", "daysAgo": 50, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-housing", "title": "Rent (two months ago)", "amount": "450.00", "paymentMethod": "bank_transfer", "daysAgo": 62, "description": null, "notes": null },
+    { "userId": "user-demo", "categoryId": "cat-food", "title": "Birthday dinner", "amount": "96.00", "paymentMethod": "card", "daysAgo": 66, "description": null, "notes": null },
+    { "userId": "user-admin", "categoryId": "cat-food", "title": "Team snacks", "amount": "32.00", "paymentMethod": "card", "daysAgo": 1, "description": null, "notes": null },
+    { "userId": "user-admin", "categoryId": "cat-transport", "title": "Ride share", "amount": "12.80", "paymentMethod": "mobile_money", "daysAgo": 3, "description": null, "notes": null },
+    { "userId": "user-admin", "categoryId": "cat-utilities", "title": "Phone plan", "amount": "20.00", "paymentMethod": "bank_transfer", "daysAgo": 7, "description": null, "notes": null }
+  ]
+}
