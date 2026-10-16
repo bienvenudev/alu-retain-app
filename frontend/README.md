@@ -28,4 +28,4 @@ Demo accounts:
 
 To see error states, run `localStorage.setItem('retain.mock.fail', '1')` in the
 browser console (remove the key to restore). To reset the mock data, delete the
-`retain.mock.db.v1` key.
+`retain.mock.db.v3` key.

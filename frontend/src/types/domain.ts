@@ -14,9 +14,15 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   mobile_money: 'Mobile money',
 }
 
+export const UNCATEGORIZED_NAME = 'Uncategorized'
+
 export interface Category {
   id: string
   name: string
+}
+
+export interface CategoryWithCount extends Category {
+  expenseCount: number
 }
 
 export interface Expense {
@@ -100,4 +106,29 @@ export interface MonthlySummary {
   status: BudgetStatus | null
   totalSpent: string
   year: number
+}
+
+export interface AdminUser {
+  createdAt: string
+  email: string
+  id: string
+  name: string
+  role: 'admin' | 'user'
+}
+
+export interface AdminExpense extends Expense {
+  userName: string
+}
+
+// Platform-wide numbers for the admin insights page.
+export interface AdminInsights {
+  bottomCategories: CategoryTotal[] // least spending first
+  categoryTotals: CategoryTotal[] // every category, largest first
+  currentMonthExpenseCount: number
+  recentExpenses: AdminExpense[]
+  recentUsers: AdminUser[]
+  topCategories: CategoryTotal[] // largest first
+  totalExpenseCount: number
+  totalSpent: string
+  userCount: number
 }

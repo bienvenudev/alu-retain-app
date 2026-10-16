@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react'
 
+import { demoUsers } from '../mock/users'
 import { currentUserStorageKey, usersStorageKey } from './storageKeys'
 
 export type UserRole = 'user' | 'admin'
@@ -19,6 +20,7 @@ export interface AuthUser {
 }
 
 interface StoredUser extends AuthUser {
+  createdAt?: string
   password: string
 }
 
@@ -32,24 +34,6 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
-
-// Temporary demo accounts so every role can be tried before the API exists.
-const demoUsers: StoredUser[] = [
-  {
-    email: 'demo@retain.app',
-    id: 'user-demo',
-    name: 'Demo User',
-    password: 'demo1234',
-    role: 'user',
-  },
-  {
-    email: 'admin@retain.app',
-    id: 'user-admin',
-    name: 'Demo Admin',
-    password: 'admin1234',
-    role: 'admin',
-  },
-]
 
 function getStoredUsers(): StoredUser[] {
   const value = localStorage.getItem(usersStorageKey)
@@ -107,7 +91,11 @@ function isAuthUser(value: unknown): value is AuthUser {
   )
 }
 
-function toAuthUser({ password: _password, ...user }: StoredUser): AuthUser {
+function toAuthUser({
+  createdAt: _createdAt,
+  password: _password,
+  ...user
+}: StoredUser): AuthUser {
   return user
 }
 
@@ -171,6 +159,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
 
         const newUser: StoredUser = {
+          createdAt: new Date().toISOString(),
           email: normalizedEmail,
           id: crypto.randomUUID(),
           name: name.trim(),

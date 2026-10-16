@@ -21,20 +21,25 @@ export async function simulateRequest<T>(handler: () => T): Promise<T> {
   return handler()
 }
 
+interface SessionUser {
+  id: string
+  role: 'admin' | 'user'
+}
+
 // Stands in for the server reading the user from an auth token.
-export function requireCurrentUserId(): string {
+export function requireCurrentUser(): SessionUser {
   const stored = localStorage.getItem(currentUserStorageKey)
 
   if (stored) {
     try {
-      const user: unknown = JSON.parse(stored)
+      const user = JSON.parse(stored) as Record<string, unknown> | null
 
-      if (user && typeof user === 'object' && 'id' in user) {
-        const { id } = user as { id: unknown }
-
-        if (typeof id === 'string') {
-          return id
-        }
+      if (
+        user &&
+        typeof user.id === 'string' &&
+        (user.role === 'user' || user.role === 'admin')
+      ) {
+        return { id: user.id, role: user.role }
       }
     } catch {
       // Treated as signed out below.
@@ -42,4 +47,14 @@ export function requireCurrentUserId(): string {
   }
 
   throw new ApiError('You must be signed in.', 401)
+}
+
+export function requireCurrentUserId(): string {
+  return requireCurrentUser().id
+}
+
+export function requireAdmin(): void {
+  if (requireCurrentUser().role !== 'admin') {
+    throw new ApiError('Administrator access is required.', 403)
+  }
 }

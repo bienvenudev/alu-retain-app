@@ -7,6 +7,9 @@ import { Button } from './components/ui/Button'
 import { PageCard, PageHeader } from './components/ui/PageCard'
 import { BudgetPage } from './pages/BudgetPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
+import { AdminInsightsPage } from './pages/admin/AdminInsightsPage'
+import { AdminLayout } from './pages/admin/AdminLayout'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
 
@@ -43,9 +46,11 @@ function AppLayout() {
           <NavLink className={navLinkClass} to="/budget">
             Budget
           </NavLink>
-          <NavLink className={navLinkClass} to="/admin">
-            Admin
-          </NavLink>
+          {user?.role === 'admin' && (
+            <NavLink className={navLinkClass} to="/admin">
+              Admin
+            </NavLink>
+          )}
         </nav>
         <div className="flex items-center gap-3 text-sm text-slate-500 sm:ml-4">
           <span>{user?.name}</span>
@@ -73,15 +78,6 @@ function PagePlaceholder({
       <PageHeader title={title} />
       <p className="mt-5 leading-relaxed text-slate-600">{description}</p>
     </PageCard>
-  )
-}
-
-function AdminPage() {
-  return (
-    <PagePlaceholder
-      description="Category management and platform insights will be available to administrators here."
-      title="Admin"
-    />
   )
 }
 
@@ -124,7 +120,10 @@ export function App() {
           <Route element={<EditExpensePage />} path="expenses/:id/edit" />
           <Route element={<BudgetPage />} path="budget" />
           <Route element={<AdminRoute />}>
-            <Route element={<AdminPage />} path="admin" />
+            <Route element={<AdminLayout />} path="admin">
+              <Route element={<AdminInsightsPage />} index />
+              <Route element={<AdminCategoriesPage />} path="categories" />
+            </Route>
           </Route>
         </Route>
       </Route>
