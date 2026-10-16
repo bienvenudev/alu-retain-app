@@ -70,7 +70,7 @@ export function CategoryNameForm({
           placeholder={label}
           {...register('name')}
         />
-        <Button disabled={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit">
           {isSubmitting ? 'Saving…' : submitLabel}
         </Button>
         {onCancel && (

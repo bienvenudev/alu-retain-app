@@ -7,7 +7,7 @@ export function ProtectedRoute() {
   const location = useLocation()
 
   if (isLoading) {
-    return <p className="p-8 text-center text-slate-500">Loading your session…</p>
+    return <p className="p-8 text-center text-ink-3">Loading your session…</p>
   }
 
   if (!isAuthenticated) {
@@ -21,7 +21,7 @@ export function AdminRoute() {
   const { isLoading, user } = useAuth()
 
   if (isLoading) {
-    return <p className="p-8 text-center text-slate-500">Loading your session…</p>
+    return <p className="p-8 text-center text-ink-3">Loading your session…</p>
   }
 
   if (user?.role !== 'admin') {

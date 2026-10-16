@@ -1,7 +1,8 @@
+import { LoaderCircle } from 'lucide-react'
 import type { ButtonHTMLAttributes } from 'react'
 import { Link, type LinkProps } from 'react-router-dom'
 
-type Variant = 'danger' | 'primary' | 'secondary'
+type Variant = 'danger' | 'ghost' | 'primary' | 'secondary'
 type Size = 'md' | 'sm'
 
 interface StyleProps {
@@ -10,30 +11,61 @@ interface StyleProps {
 }
 
 const baseClasses =
-  'inline-block cursor-pointer rounded-lg text-center font-bold no-underline transition-colors disabled:cursor-wait disabled:opacity-60'
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap no-underline transition-[background-color,border-color,color,filter] duration-150 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-50'
 
 const variantClasses: Record<Variant, string> = {
-  danger: 'bg-red-700 text-white hover:bg-red-800',
-  primary: 'bg-indigo-700 text-white hover:bg-indigo-800',
-  secondary: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100',
+  danger:
+    'border border-bad/30 bg-bad/10 text-bad hover:bg-bad/20 disabled:hover:bg-bad/10',
+  ghost: 'text-ink-2 hover:bg-raised hover:text-ink',
+  primary:
+    'bg-accent text-on-accent hover:brightness-110 disabled:hover:brightness-100',
+  secondary:
+    'border border-line-strong bg-surface text-ink hover:bg-raised disabled:hover:bg-surface',
 }
 
+// Touch screens get a 44px minimum target; pointer devices stay compact.
 const sizeClasses: Record<Size, string> = {
-  md: 'px-4 py-2.5',
-  sm: 'px-3 py-1.5 text-sm',
+  md: 'min-h-11 px-4 text-sm',
+  sm: 'min-h-9 px-3 text-sm pointer-coarse:min-h-11',
 }
 
 function buttonClasses({ size = 'md', variant = 'primary' }: StyleProps) {
   return `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`
 }
 
+interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
+    StyleProps {
+  // Disables the button and shows a spinner while a request is running.
+  loading?: boolean
+}
+
 export function Button({
+  children,
+  disabled,
+  loading = false,
   size,
   type = 'button',
   variant,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & StyleProps) {
-  return <button className={buttonClasses({ size, variant })} type={type} {...props} />
+}: ButtonProps) {
+  return (
+    <button
+      aria-busy={loading || undefined}
+      className={buttonClasses({ size, variant })}
+      disabled={disabled || loading}
+      type={type}
+      {...props}
+    >
+      {loading && (
+        <LoaderCircle
+          aria-hidden="true"
+          className="size-4 motion-safe:animate-spin"
+        />
+      )}
+      {children}
+    </button>
+  )
 }
 
 export function ButtonLink({

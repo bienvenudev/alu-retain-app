@@ -1,2 +1,2 @@
 export const fieldClass =
-  'w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal text-slate-900 focus:border-indigo-500 focus:outline-3 focus:outline-indigo-100 aria-[invalid=true]:border-red-500'
+  'w-full min-h-11 rounded-lg border border-field-line bg-surface px-3 py-2.5 font-normal text-ink transition-colors placeholder:text-ink-3 focus:border-accent-ink aria-[invalid=true]:border-bad'

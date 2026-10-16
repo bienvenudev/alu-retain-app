@@ -53,7 +53,7 @@ export function BudgetForm({ initialAmount, onSubmit }: BudgetFormProps) {
       </FormField>
       {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
       <div>
-        <Button disabled={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit">
           {isSubmitting ? 'Saving…' : 'Save budget'}
         </Button>
       </div>

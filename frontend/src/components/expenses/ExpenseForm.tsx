@@ -52,7 +52,7 @@ export function ExpenseForm({
   })
 
   return (
-    <form className="mt-7 grid gap-4" noValidate onSubmit={submit}>
+    <form className="grid gap-4" noValidate onSubmit={submit}>
       <FormField error={errors.title?.message} label="Title">
         <input
           className={fieldClass}
@@ -118,7 +118,7 @@ export function ExpenseForm({
       {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
 
       <div className="flex flex-wrap gap-2">
-        <Button disabled={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit">
           {isSubmitting ? 'Saving…' : submitLabel}
         </Button>
         <ButtonLink to="/expenses" variant="secondary">

@@ -21,7 +21,7 @@ export function Pagination({
   return (
     <nav
       aria-label="Pagination"
-      className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600"
+      className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-ink-2"
     >
       <p>
         Showing {first}–{last} of {total}

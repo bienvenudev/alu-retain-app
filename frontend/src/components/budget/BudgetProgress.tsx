@@ -1,33 +1,41 @@
+import { CircleAlert, CircleCheck, type LucideIcon, TriangleAlert } from 'lucide-react'
+
 import { formatMoney } from '../../lib/format'
 import type { BudgetStatus, MonthlySummary } from '../../types/domain'
 
 const statusStyles: Record<
   BudgetStatus,
-  { badge: string; bar: string; label: string }
+  { badge: string; bar: string; icon: LucideIcon; label: string }
 > = {
   approaching: {
-    badge: 'bg-amber-100 text-amber-800',
-    bar: 'bg-amber-500',
+    badge: 'bg-warn/10 text-warn',
+    bar: 'bg-warn',
+    icon: TriangleAlert,
     label: 'Approaching budget',
   },
   over: {
-    badge: 'bg-red-100 text-red-800',
-    bar: 'bg-red-600',
+    badge: 'bg-bad/10 text-bad',
+    bar: 'bg-bad',
+    icon: CircleAlert,
     label: 'Over budget',
   },
   within: {
-    badge: 'bg-green-100 text-green-800',
-    bar: 'bg-green-600',
+    badge: 'bg-ok/10 text-ok',
+    bar: 'bg-ok',
+    icon: CircleCheck,
     label: 'Within budget',
   },
 }
 
 function StatusBadge({ status }: { status: BudgetStatus }) {
+  const { badge, icon: Icon, label } = statusStyles[status]
+
   return (
     <span
-      className={`rounded-full px-3 py-1 text-sm font-bold ${statusStyles[status].badge}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${badge}`}
     >
-      {statusStyles[status].label}
+      <Icon aria-hidden="true" className="size-4" />
+      {label}
     </span>
   )
 }
@@ -52,7 +60,7 @@ export function BudgetProgress({ summary }: { summary: MonthlySummary }) {
         aria-valuemax={100}
         aria-valuemin={0}
         aria-valuenow={Math.min(percentSpent, 100)}
-        className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100"
+        className="mt-3 h-3 overflow-hidden rounded-full bg-raised"
         role="progressbar"
       >
         <div
@@ -60,7 +68,7 @@ export function BudgetProgress({ summary }: { summary: MonthlySummary }) {
           style={{ width: `${Math.min(percentSpent, 100)}%` }}
         />
       </div>
-      <p className="mt-2 text-sm text-slate-500">{percentSpent}% of budget used</p>
+      <p className="mt-2 text-sm text-ink-3">{percentSpent}% of budget used</p>
     </div>
   )
 }

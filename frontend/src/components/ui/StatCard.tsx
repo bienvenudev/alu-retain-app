@@ -10,10 +10,12 @@ export function StatCard({
   value: ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 p-4">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-1 text-xl font-extrabold tabular-nums">{value}</p>
-      {hint && <p className="mt-1 text-sm text-slate-500">{hint}</p>}
+    <div className="rounded-xl border border-line bg-surface p-4">
+      <p className="text-sm text-ink-3">{label}</p>
+      <p className="mt-1 font-display text-2xl font-semibold tabular-nums">
+        {value}
+      </p>
+      {hint && <p className="mt-1 truncate text-sm text-ink-3">{hint}</p>}
     </div>
   )
 }

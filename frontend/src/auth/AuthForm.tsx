@@ -5,7 +5,6 @@ import { FormField } from '../components/FormField'
 import { fieldClass } from '../components/fieldStyles'
 import { Button } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
-import { PageHeader } from '../components/ui/PageCard'
 import { useAuth } from './AuthContext'
 
 interface AuthFormProps {
@@ -69,9 +68,11 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <main className="grid min-h-screen place-items-center p-6">
-      <section className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-10">
-        <PageHeader title={isSignUp ? 'Create your account' : 'Welcome back'} />
-        <p className="mt-5 leading-relaxed text-slate-600">
+      <section className="w-full max-w-md rounded-xl border border-line bg-surface p-6 sm:p-8">
+        <h1 className="font-display text-3xl font-semibold">
+          {isSignUp ? 'Create your account' : 'Welcome back'}
+        </h1>
+        <p className="mt-2 text-ink-2">
           {isSignUp
             ? 'Start tracking your spending in one place.'
             : 'Sign in to manage your expenses and budget.'}
@@ -110,7 +111,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             />
           </FormField>
           {error && <ErrorMessage>{error}</ErrorMessage>}
-          <Button disabled={isSubmitting} type="submit">
+          <Button loading={isSubmitting} type="submit">
             {isSubmitting
               ? 'Please wait…'
               : isSignUp
@@ -118,10 +119,10 @@ export function AuthForm({ mode }: AuthFormProps) {
                 : 'Sign in'}
           </Button>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-ink-3">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <Link
-            className="font-bold text-indigo-700"
+            className="font-medium text-accent-ink"
             to={isSignUp ? '/signin' : '/signup'}
           >
             {isSignUp ? 'Sign in' : 'Sign up'}

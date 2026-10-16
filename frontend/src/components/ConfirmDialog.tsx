@@ -38,7 +38,7 @@ export function ConfirmDialog({
   return (
     <dialog
       aria-labelledby="confirm-dialog-title"
-      className="m-auto w-[min(92vw,24rem)] rounded-xl p-6 backdrop:bg-black/40"
+      className="m-auto w-[min(92vw,26rem)] rounded-xl border border-line-strong bg-raised p-6 text-ink backdrop:bg-bg/80 backdrop:backdrop-blur-sm"
       onCancel={(event) => {
         event.preventDefault()
 
@@ -48,16 +48,16 @@ export function ConfirmDialog({
       }}
       ref={dialogRef}
     >
-      <h2 className="m-0 text-lg font-bold" id="confirm-dialog-title">
+      <h2 className="m-0 font-display text-xl font-semibold" id="confirm-dialog-title">
         {title}
       </h2>
-      <p className="mt-2 text-slate-600">{message}</p>
+      <p className="mt-2 text-ink-2">{message}</p>
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      <div className="mt-5 flex justify-end gap-2">
+      <div className="mt-6 flex justify-end gap-2">
         <Button disabled={isBusy} onClick={onCancel} variant="secondary">
           Cancel
         </Button>
-        <Button disabled={isBusy} onClick={onConfirm} variant="danger">
+        <Button loading={isBusy} onClick={onConfirm} variant="danger">
           {isBusy ? 'Deleting…' : confirmLabel}
         </Button>
       </div>

@@ -47,7 +47,7 @@ export function ExpenseFilters() {
 
   return (
     <form
-      className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      className="mb-6 grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2 lg:grid-cols-4"
       onSubmit={(event) => event.preventDefault()}
       role="search"
     >

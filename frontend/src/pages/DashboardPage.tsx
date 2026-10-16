@@ -6,7 +6,7 @@ import { RecentExpenses } from '../components/dashboard/RecentExpenses'
 import { MonthPicker } from '../components/MonthPicker'
 import { Button, ButtonLink } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
-import { PageCard, PageHeader } from '../components/ui/PageCard'
+import { Page, PageHeader } from '../components/ui/Page'
 import { StatCard } from '../components/ui/StatCard'
 import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { formatMoney } from '../lib/format'
@@ -17,15 +17,12 @@ export function DashboardPage() {
   const { reload, state } = useMonthlySummary(year, month)
 
   return (
-    <PageCard wide>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <PageHeader title="Dashboard" />
-        <MonthPicker />
-      </div>
+    <Page wide>
+      <PageHeader actions={<MonthPicker />} title="Dashboard" />
 
-      <div className="mt-6">
+      <div>
         {state.status === 'loading' && (
-          <p aria-live="polite" className="text-slate-600" role="status">
+          <p aria-live="polite" className="text-ink-2" role="status">
             Loading your summary…
           </p>
         )}
@@ -39,7 +36,7 @@ export function DashboardPage() {
 
         {state.status === 'success' && state.data.expenseCount === 0 && (
           <div className="grid justify-start gap-3">
-            <p className="text-slate-600">
+            <p className="text-ink-2">
               No expenses recorded for this month yet.
             </p>
             <ButtonLink to="/expenses/new">Add expense</ButtonLink>
@@ -59,7 +56,7 @@ export function DashboardPage() {
               <StatCard
                 hint={
                   state.data.budget === null && (
-                    <Link className="font-bold text-indigo-700" to="/budget">
+                    <Link className="font-bold text-accent-ink" to="/budget">
                       Set a budget
                     </Link>
                   )
@@ -114,6 +111,6 @@ export function DashboardPage() {
           </div>
         )}
       </div>
-    </PageCard>
+    </Page>
   )
 }

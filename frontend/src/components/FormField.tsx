@@ -1,3 +1,4 @@
+import { CircleAlert } from 'lucide-react'
 import type { PropsWithChildren } from 'react'
 
 interface FormFieldProps {
@@ -11,11 +12,15 @@ export function FormField({
   label,
 }: PropsWithChildren<FormFieldProps>) {
   return (
-    <label className="grid gap-1.5 text-sm font-bold text-slate-700">
+    <label className="grid content-start gap-1.5 text-sm font-medium text-ink-2">
       {label}
       {children}
       {error && (
-        <span className="text-xs font-semibold text-red-700" role="alert">
+        <span
+          className="flex items-center gap-1.5 text-xs font-medium text-bad"
+          role="alert"
+        >
+          <CircleAlert aria-hidden="true" className="size-3.5 shrink-0" />
           {error}
         </span>
       )}

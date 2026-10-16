@@ -1,3 +1,10 @@
+import {
+  LayoutDashboard,
+  LogOut,
+  Receipt,
+  ShieldCheck,
+  Wallet,
+} from 'lucide-react'
 import { Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 
 import { AuthForm } from './auth/AuthForm'
@@ -5,74 +12,128 @@ import { useAuth } from './auth/AuthContext'
 import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
 import { ServerWakingNotice } from './components/ServerWakingNotice'
 import { Button } from './components/ui/Button'
-import { PageCard, PageHeader } from './components/ui/PageCard'
-import { BudgetPage } from './pages/BudgetPage'
-import { DashboardPage } from './pages/DashboardPage'
+import { Page, PageHeader } from './components/ui/Page'
 import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 import { AdminInsightsPage } from './pages/admin/AdminInsightsPage'
 import { AdminLayout } from './pages/admin/AdminLayout'
+import { BudgetPage } from './pages/BudgetPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
 import { resetFilters } from './store/expenseFiltersSlice'
 import { useAppDispatch } from './store/hooks'
 
-function navLinkClass({ isActive }: { isActive: boolean }) {
-  return `rounded-lg px-3 py-2 text-sm no-underline ${
+const navItems = [
+  { adminOnly: false, icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
+  { adminOnly: false, icon: Receipt, label: 'Expenses', to: '/expenses' },
+  { adminOnly: false, icon: Wallet, label: 'Budget', to: '/budget' },
+  { adminOnly: true, icon: ShieldCheck, label: 'Admin', to: '/admin' },
+]
+
+function Brand() {
+  return (
+    <Link
+      className="flex items-center gap-2.5 font-display text-xl font-semibold text-ink no-underline"
+      to="/dashboard"
+    >
+      <span
+        aria-hidden="true"
+        className="grid size-8 place-items-center rounded-lg bg-accent text-base font-bold text-on-accent"
+      >
+        R
+      </span>
+      Retain
+    </Link>
+  )
+}
+
+function sidebarLinkClass({ isActive }: { isActive: boolean }) {
+  return `flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium no-underline transition-colors duration-150 ${
     isActive
-      ? 'bg-indigo-50 text-indigo-700'
-      : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-700'
+      ? 'bg-raised text-ink'
+      : 'text-ink-2 hover:bg-raised/60 hover:text-ink'
+  }`
+}
+
+function tabLinkClass({ isActive }: { isActive: boolean }) {
+  return `flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs font-medium no-underline transition-colors duration-150 ${
+    isActive ? 'text-accent-ink' : 'text-ink-3 hover:text-ink'
   }`
 }
 
 function AppLayout() {
   const { signOut, user } = useAuth()
   const dispatch = useAppDispatch()
+  const items = navItems.filter((item) => !item.adminOnly || user?.role === 'admin')
+
+  function handleSignOut() {
+    dispatch(resetFilters())
+    signOut()
+  }
 
   return (
-    <div className="min-h-screen">
-      <header className="flex flex-col items-start gap-4 border-b border-slate-200 bg-white px-[clamp(1rem,5vw,4rem)] py-4 sm:flex-row sm:items-center">
-        <Link
-          className="text-xl font-extrabold text-slate-900 no-underline"
-          to="/dashboard"
-        >
-          Retain
-        </Link>
-        <nav
-          aria-label="Main navigation"
-          className="flex flex-wrap gap-2 sm:ml-auto"
-        >
-          <NavLink className={navLinkClass} to="/dashboard">
-            Dashboard
-          </NavLink>
-          <NavLink className={navLinkClass} to="/expenses">
-            Expenses
-          </NavLink>
-          <NavLink className={navLinkClass} to="/budget">
-            Budget
-          </NavLink>
-          {user?.role === 'admin' && (
-            <NavLink className={navLinkClass} to="/admin">
-              Admin
-            </NavLink>
-          )}
-        </nav>
-        <div className="flex items-center gap-3 text-sm text-slate-500 sm:ml-4">
-          <span>{user?.name}</span>
-          <Button
-            onClick={() => {
-              dispatch(resetFilters())
-              signOut()
-            }}
-            size="sm"
-            variant="secondary"
-          >
-            Sign out
-          </Button>
+    <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
+      <a
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
+        href="#main"
+      >
+        Skip to content
+      </a>
+
+      <aside className="sticky top-0 hidden h-screen flex-col border-r border-line bg-surface px-3 py-5 lg:flex">
+        <div className="px-3">
+          <Brand />
         </div>
+        <nav aria-label="Main navigation" className="mt-8 grid gap-1">
+          {items.map(({ icon: Icon, label, to }) => (
+            <NavLink className={sidebarLinkClass} key={to} to={to}>
+              <Icon aria-hidden="true" className="size-[18px]" />
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="mt-auto border-t border-line px-3 pt-4">
+          <p className="truncate text-sm font-medium">{user?.name}</p>
+          <p className="truncate text-xs text-ink-3">{user?.email}</p>
+          <div className="mt-3 grid">
+            <Button onClick={handleSignOut} size="sm" variant="ghost">
+              <LogOut aria-hidden="true" className="size-4" />
+              Sign out
+            </Button>
+          </div>
+        </div>
+      </aside>
+
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-bg/90 px-4 backdrop-blur lg:hidden">
+        <Brand />
+        <Button
+          aria-label="Sign out"
+          onClick={handleSignOut}
+          size="sm"
+          variant="ghost"
+        >
+          <LogOut aria-hidden="true" className="size-[18px]" />
+        </Button>
       </header>
-      <main className="grid min-h-[calc(100vh-8rem)] place-items-center p-6 sm:min-h-[calc(100vh-4.5rem)]">
+
+      <main
+        className="flex justify-center px-4 pt-6 pb-28 sm:px-8 lg:px-12 lg:py-10"
+        id="main"
+      >
         <Outlet />
       </main>
+
+      <nav
+        aria-label="Main navigation"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+      >
+        {items.map(({ icon: Icon, label, to }) => (
+          <NavLink className={tabLinkClass} key={to} to={to}>
+            <Icon aria-hidden="true" className="size-5" />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   )
 }
@@ -87,19 +148,16 @@ function SignUpPage() {
 
 function NotFoundPage() {
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      <PageCard>
-        <PageHeader eyebrow="404" title="Page not found" />
-        <p className="mt-5 text-slate-600">
-          The page you requested does not exist.
-        </p>
-        <Link
-          className="mt-6 inline-block font-bold text-indigo-700"
-          to="/dashboard"
-        >
-          Return to dashboard
+    <main className="flex min-h-screen justify-center p-6 pt-24">
+      <Page>
+        <PageHeader
+          description="The page you requested does not exist."
+          title="Page not found"
+        />
+        <Link className="font-medium text-accent-ink" to="/dashboard">
+          Back to your dashboard
         </Link>
-      </PageCard>
+      </Page>
     </main>
   )
 }

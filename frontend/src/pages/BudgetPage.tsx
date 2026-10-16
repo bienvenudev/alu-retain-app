@@ -5,7 +5,9 @@ import { BudgetProgress } from '../components/budget/BudgetProgress'
 import { MonthPicker } from '../components/MonthPicker'
 import { Button } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
-import { PageCard, PageHeader } from '../components/ui/PageCard'
+import { Notice } from '../components/ui/Notice'
+import { Page, PageHeader } from '../components/ui/Page'
+import { Panel } from '../components/ui/Panel'
 import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { useSelectedMonth } from '../month/SelectedMonthContext'
 import { budgetsService } from '../services/budgetsService'
@@ -22,15 +24,12 @@ export function BudgetPage() {
   }
 
   return (
-    <PageCard wide>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <PageHeader title="Budget" />
-        <MonthPicker />
-      </div>
+    <Page wide>
+      <PageHeader actions={<MonthPicker />} title="Budget" />
 
-      <div className="mt-6 grid gap-6">
+      <div className="grid gap-6">
         {state.status === 'loading' && (
-          <p aria-live="polite" className="text-slate-600" role="status">
+          <p aria-live="polite" className="text-ink-2" role="status">
             Loading your budget…
           </p>
         )}
@@ -45,7 +44,7 @@ export function BudgetPage() {
         {state.status === 'success' && (
           <>
             {state.data.budget === null ? (
-              <p className="text-slate-600">
+              <p className="text-ink-2">
                 You have not set a budget for this month. Set one below to start
                 tracking your spending.
               </p>
@@ -53,25 +52,20 @@ export function BudgetPage() {
               <BudgetProgress summary={state.data} />
             )}
 
-            {notice && (
-              <p
-                className="rounded-lg bg-green-50 px-3.5 py-2.5 text-sm font-semibold text-green-700"
-                role="status"
-              >
-                {notice}
-              </p>
-            )}
+            {notice && <Notice onDismiss={() => setNotice(null)}>{notice}</Notice>}
 
-            <BudgetForm
-              initialAmount={
-                state.data.budget === null ? '' : String(Number(state.data.budget))
-              }
-              key={`${year}-${month}`}
-              onSubmit={handleSubmit}
-            />
+            <Panel className="max-w-md">
+              <BudgetForm
+                initialAmount={
+                  state.data.budget === null ? '' : String(Number(state.data.budget))
+                }
+                key={`${year}-${month}`}
+                onSubmit={handleSubmit}
+              />
+            </Panel>
           </>
         )}
       </div>
-    </PageCard>
+    </Page>
   )
 }

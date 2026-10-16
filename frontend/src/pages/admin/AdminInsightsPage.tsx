@@ -19,13 +19,13 @@ function RankedCategories({
       <ol className="m-0 grid list-none gap-2 p-0">
         {items.map(({ category, count, total }, index) => (
           <li
-            className="flex items-baseline justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
+            className="flex items-baseline justify-between gap-3 border-b border-line pb-2 text-sm"
             key={category.id}
           >
             <span>
-              <span className="mr-2 text-slate-400">{index + 1}.</span>
+              <span className="mr-2 text-ink-3">{index + 1}.</span>
               <span className="font-medium">{category.name}</span>{' '}
-              <span className="text-slate-500">({count})</span>
+              <span className="text-ink-3">({count})</span>
             </span>
             <span className="font-medium whitespace-nowrap tabular-nums">
               {formatMoney(total)}
@@ -42,7 +42,7 @@ export function AdminInsightsPage() {
 
   if (state.status === 'loading') {
     return (
-      <p aria-live="polite" className="text-slate-600" role="status">
+      <p aria-live="polite" className="text-ink-2" role="status">
         Loading insights…
       </p>
     )
@@ -99,12 +99,12 @@ export function AdminInsightsPage() {
           <ul className="m-0 grid list-none gap-2 p-0">
             {insights.recentExpenses.map((expense) => (
               <li
-                className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"
+                className="flex items-start justify-between gap-3 border-b border-line pb-2"
                 key={expense.id}
               >
                 <div>
                   <p className="font-medium">{expense.title}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-ink-3">
                     {expense.userName} · {expense.category.name} ·{' '}
                     {formatDate(expense.expenseDate)}
                   </p>
@@ -122,14 +122,14 @@ export function AdminInsightsPage() {
           <ul className="m-0 grid list-none gap-2 p-0">
             {insights.recentUsers.map((user) => (
               <li
-                className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"
+                className="flex items-start justify-between gap-3 border-b border-line pb-2"
                 key={user.id}
               >
                 <div>
                   <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-slate-500">{user.email}</p>
+                  <p className="text-sm text-ink-3">{user.email}</p>
                 </div>
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-ink-3">
                   {user.createdAt
                     ? formatDate(user.createdAt.slice(0, 10))
                     : '—'}

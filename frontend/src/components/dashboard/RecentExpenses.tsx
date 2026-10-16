@@ -9,12 +9,12 @@ export function RecentExpenses({ expenses }: { expenses: Expense[] }) {
       <ul className="m-0 grid list-none gap-2 p-0">
         {expenses.map((expense) => (
           <li
-            className="flex items-start justify-between gap-3 border-b border-slate-100 pb-2"
+            className="flex items-start justify-between gap-3 border-b border-line pb-2"
             key={expense.id}
           >
             <div>
               <p className="font-medium">{expense.title}</p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-ink-3">
                 {formatDate(expense.expenseDate)} · {expense.category.name}
               </p>
             </div>
@@ -25,7 +25,7 @@ export function RecentExpenses({ expenses }: { expenses: Expense[] }) {
         ))}
       </ul>
       <Link
-        className="mt-3 inline-block text-sm font-bold text-indigo-700"
+        className="mt-3 inline-block text-sm font-bold text-accent-ink"
         to="/expenses"
       >
         View all expenses

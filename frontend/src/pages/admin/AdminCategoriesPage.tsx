@@ -4,6 +4,7 @@ import { CategoryNameForm } from '../../components/admin/CategoryNameForm'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { Button } from '../../components/ui/Button'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
+import { Notice } from '../../components/ui/Notice'
 import { useAdminCategories } from '../../hooks/useAdminCategories'
 import { getErrorMessage } from '../../services/apiError'
 import { categoriesService } from '../../services/categoriesService'
@@ -75,22 +76,7 @@ export function AdminCategoriesPage() {
         />
       </section>
 
-      {notice && (
-        <div
-          className="flex items-center justify-between gap-4 rounded-lg bg-green-50 px-3.5 py-2.5 text-sm font-semibold text-green-700"
-          role="status"
-        >
-          <span>{notice}</span>
-          <Button
-            aria-label="Dismiss message"
-            onClick={() => setNotice(null)}
-            size="sm"
-            variant="secondary"
-          >
-            ✕
-          </Button>
-        </div>
-      )}
+      {notice && <Notice onDismiss={() => setNotice(null)}>{notice}</Notice>}
 
       <section aria-labelledby="all-categories">
         <h2 className="mb-3 text-lg font-bold" id="all-categories">
@@ -98,7 +84,7 @@ export function AdminCategoriesPage() {
         </h2>
 
         {state.status === 'loading' && (
-          <p aria-live="polite" className="text-slate-600" role="status">
+          <p aria-live="polite" className="text-ink-2" role="status">
             Loading categories…
           </p>
         )}
@@ -117,7 +103,7 @@ export function AdminCategoriesPage() {
 
               return (
                 <li
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line p-3"
                   key={category.id}
                 >
                   {editingId === category.id ? (
@@ -134,7 +120,7 @@ export function AdminCategoriesPage() {
                     <>
                       <div>
                         <p className="font-medium">{category.name}</p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-ink-3">
                           {category.expenseCount}{' '}
                           {category.expenseCount === 1 ? 'expense' : 'expenses'}
                           {isProtected && ' · Default category'}

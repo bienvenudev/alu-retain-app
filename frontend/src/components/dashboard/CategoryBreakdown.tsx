@@ -21,7 +21,7 @@ export function CategoryBreakdown({
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="font-medium">
                 {category.name}{' '}
-                <span className="font-normal text-slate-500">
+                <span className="font-normal text-ink-3">
                   ({count} {count === 1 ? 'expense' : 'expenses'})
                 </span>
               </span>
@@ -31,10 +31,10 @@ export function CategoryBreakdown({
             </div>
             <div
               aria-hidden="true"
-              className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100"
+              className="mt-1 h-2 overflow-hidden rounded-full bg-raised"
             >
               <div
-                className="h-full rounded-full bg-indigo-500"
+                className="h-full rounded-full bg-accent-ink"
                 style={{ width: `${share}%` }}
               />
             </div>

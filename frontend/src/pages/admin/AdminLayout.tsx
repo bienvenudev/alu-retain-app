@@ -1,20 +1,26 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
-import { PageCard, PageHeader } from '../../components/ui/PageCard'
+import { Page, PageHeader } from '../../components/ui/Page'
 
 function tabClass({ isActive }: { isActive: boolean }) {
-  return `rounded-lg px-3 py-2 text-sm font-bold no-underline ${
+  return `-mb-px border-b-2 px-1 pb-3 text-sm font-medium no-underline transition-colors duration-150 ${
     isActive
-      ? 'bg-indigo-700 text-white'
-      : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+      ? 'border-accent-ink text-ink'
+      : 'border-transparent text-ink-3 hover:text-ink'
   }`
 }
 
 export function AdminLayout() {
   return (
-    <PageCard wide>
-      <PageHeader eyebrow="Administration" title="Admin" />
-      <nav aria-label="Admin sections" className="mt-5 flex flex-wrap gap-2">
+    <Page wide>
+      <PageHeader
+        description="Manage categories and see how Retain is being used."
+        title="Admin"
+      />
+      <nav
+        aria-label="Admin sections"
+        className="mb-8 flex gap-6 border-b border-line"
+      >
         <NavLink className={tabClass} end to="/admin">
           Insights
         </NavLink>
@@ -22,9 +28,7 @@ export function AdminLayout() {
           Categories
         </NavLink>
       </nav>
-      <div className="mt-6">
-        <Outlet />
-      </div>
-    </PageCard>
+      <Outlet />
+    </Page>
   )
 }

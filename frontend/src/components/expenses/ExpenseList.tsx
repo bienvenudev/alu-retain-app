@@ -74,7 +74,7 @@ function SortHeader({
       className={`py-2 pr-4 font-medium ${align === 'right' ? 'text-right' : ''}`}
     >
       <button
-        className="inline-flex cursor-pointer items-center gap-1 hover:text-slate-900"
+        className="inline-flex cursor-pointer items-center gap-1 hover:text-ink"
         onClick={() => onSort(field)}
         type="button"
       >
@@ -99,7 +99,7 @@ export function ExpenseList({
   return (
     <>
       <table className="hidden w-full text-left text-sm md:table">
-        <thead className="border-b border-slate-200 text-slate-500">
+        <thead className="border-b border-line text-ink-3">
           <tr>
             <SortHeader field="date" label="Date" {...sortProps} />
             <th className="py-2 pr-4 font-medium">Title</th>
@@ -113,7 +113,7 @@ export function ExpenseList({
         </thead>
         <tbody>
           {expenses.map((expense) => (
-            <tr className="border-b border-slate-100" key={expense.id}>
+            <tr className="border-b border-line" key={expense.id}>
               <td className="py-3 pr-4 whitespace-nowrap">
                 {formatDate(expense.expenseDate)}
               </td>
@@ -136,7 +136,7 @@ export function ExpenseList({
       <ul className="m-0 grid list-none gap-3 p-0 md:hidden">
         {expenses.map((expense) => (
           <li
-            className="rounded-lg border border-slate-200 p-3"
+            className="rounded-lg border border-line p-3"
             key={expense.id}
           >
             <div className="flex items-start justify-between gap-3">
@@ -145,7 +145,7 @@ export function ExpenseList({
                 {formatMoney(expense.amount)}
               </span>
             </div>
-            <p className="mt-1 mb-3 text-sm text-slate-500">
+            <p className="mt-1 mb-3 text-sm text-ink-3">
               {formatDate(expense.expenseDate)} · {expense.category.name} ·{' '}
               {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
             </p>
