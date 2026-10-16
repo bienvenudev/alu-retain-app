@@ -12,20 +12,20 @@ npm run dev
 The API base URL can be configured with `VITE_API_BASE_URL`. See `.env.example` for the local default.
 
 
-## Mock data (temporary)
+## Connecting to the API
 
-Until the Express API is connected, `src/services` reads and writes a seeded
-in-browser database (`src/mock/seed.json`, persisted in `localStorage`).
-Components only talk to the services, so swapping in the API only changes the
-service bodies.
+The app talks to the Express API in `../backend` through typed service functions in
+`src/services` (one shared Axios client in `apiClient.ts`). Components never call
+Axios directly.
 
-Demo accounts:
+1. Start the backend (`cd backend && npm run dev`, default `http://localhost:3000`).
+2. Copy `.env.example` to `.env` if the API runs somewhere else and set
+   `VITE_API_BASE_URL`.
+3. Run `npm run dev` here and open `http://localhost:5173`.
 
-| Role  | Email              | Password   |
-| ----- | ------------------ | ---------- |
-| User  | `demo@retain.app`  | `demo1234`  |
-| Admin | `admin@retain.app` | `admin1234` |
+Sign up creates a normal user. The administrator is created by the backend seed
+(`ADMIN_EMAIL` / `ADMIN_PASSWORD` in `backend/.env`).
 
-To see error states, run `localStorage.setItem('retain.mock.fail', '1')` in the
-browser console (remove the key to restore). To reset the mock data, delete the
-`retain.mock.db.v3` key.
+The login token is kept in `localStorage`. On a 401 from any request the session
+ends and the user is sent to sign in. Failed requests surface as an `ApiError` with a
+message ready to show; an unreachable server has `status` 0.

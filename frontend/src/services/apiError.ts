@@ -1,9 +1,15 @@
 export class ApiError extends Error {
-  readonly status: number
+  readonly details?: Record<string, string[]>
+  readonly status: number // 0 when the server could not be reached
 
-  constructor(message: string, status: number) {
+  constructor(
+    message: string,
+    status: number,
+    details?: Record<string, string[]>,
+  ) {
     super(message)
     this.name = 'ApiError'
+    this.details = details
     this.status = status
   }
 }

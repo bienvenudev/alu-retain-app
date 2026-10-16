@@ -1,8 +1,5 @@
-// Money is summed as integer cents so floating-point error never appears.
+// Amounts arrive from the API as fixed two-decimal strings. This converts to
+// integer cents for arithmetic, so floating-point error never shows up.
 export function toCents(amount: string): number {
   return Math.round(Number(amount) * 100)
-}
-
-export function fromCents(cents: number): string {
-  return (cents / 100).toFixed(2)
 }

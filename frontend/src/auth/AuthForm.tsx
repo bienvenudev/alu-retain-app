@@ -38,8 +38,8 @@ export function AuthForm({ mode }: AuthFormProps) {
       return
     }
 
-    if (password.length < 6) {
-      setError('Your password must be at least 6 characters.')
+    if (isSignUp && password.length < 8) {
+      setError('Your password must be at least 8 characters.')
       return
     }
 
@@ -102,7 +102,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             <input
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
               className={fieldClass}
-              minLength={6}
+              minLength={isSignUp ? 8 : undefined}
               onChange={(event) => setPassword(event.target.value)}
               required
               type="password"

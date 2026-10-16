@@ -1,3 +1,12 @@
+export type UserRole = 'admin' | 'user'
+
+export interface AuthUser {
+  email: string
+  id: string
+  name: string
+  role: UserRole
+}
+
 export const PAYMENT_METHODS = [
   'cash',
   'card',

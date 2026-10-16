@@ -7,22 +7,13 @@ import {
   useState,
 } from 'react'
 
-import { demoUsers } from '../mock/users'
-import { currentUserStorageKey, usersStorageKey } from './storageKeys'
+import { ApiError } from '../services/apiError'
+import { setUnauthorizedHandler } from '../services/apiClient'
+import { authService } from '../services/authService'
+import type { AuthUser, UserRole } from '../types/domain'
+import { tokenStorage } from './tokenStorage'
 
-export type UserRole = 'user' | 'admin'
-
-export interface AuthUser {
-  email: string
-  id: string
-  name: string
-  role: UserRole
-}
-
-interface StoredUser extends AuthUser {
-  createdAt?: string
-  password: string
-}
+export type { AuthUser, UserRole }
 
 interface AuthContextValue {
   isAuthenticated: boolean
@@ -35,94 +26,51 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-function getStoredUsers(): StoredUser[] {
-  const value = localStorage.getItem(usersStorageKey)
-
-  if (!value) {
-    return []
-  }
-
-  try {
-    const users: unknown = JSON.parse(value)
-
-    if (!Array.isArray(users)) {
-      return []
-    }
-
-    return users.filter(isStoredUser)
-  } catch {
-    localStorage.removeItem(usersStorageKey)
-    return []
-  }
-}
-
-function getAllUsers(): StoredUser[] {
-  return [...demoUsers, ...getStoredUsers()]
-}
-
-function isStoredUser(value: unknown): value is StoredUser {
-  if (!value || typeof value !== 'object') {
-    return false
-  }
-
-  const user = value as Record<string, unknown>
-
-  return (
-    typeof user.email === 'string' &&
-    typeof user.id === 'string' &&
-    typeof user.name === 'string' &&
-    (user.role === 'user' || user.role === 'admin') &&
-    typeof user.password === 'string'
-  )
-}
-
-function isAuthUser(value: unknown): value is AuthUser {
-  if (!value || typeof value !== 'object') {
-    return false
-  }
-
-  const user = value as Record<string, unknown>
-
-  return (
-    typeof user.email === 'string' &&
-    typeof user.id === 'string' &&
-    typeof user.name === 'string' &&
-    (user.role === 'user' || user.role === 'admin')
-  )
-}
-
-function toAuthUser({
-  createdAt: _createdAt,
-  password: _password,
-  ...user
-}: StoredUser): AuthUser {
-  return user
-}
-
-function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
-}
-
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // Only wait on the server when there is a saved session to check.
+  const [isLoading, setIsLoading] = useState(() => tokenStorage.get() !== null)
 
+  // Restore the session: ask the server who the saved token belongs to.
   useEffect(() => {
-    const storedUser = localStorage.getItem(currentUserStorageKey)
-
-    if (storedUser) {
-      try {
-        const parsedUser: unknown = JSON.parse(storedUser)
-
-        if (isAuthUser(parsedUser)) {
-          setUser(parsedUser)
-        }
-      } catch {
-        localStorage.removeItem(currentUserStorageKey)
-      }
+    if (!tokenStorage.get()) {
+      return
     }
 
-    setIsLoading(false)
+    let ignore = false
+
+    authService
+      .me()
+      .then((currentUser) => {
+        if (!ignore) {
+          setUser(currentUser)
+        }
+      })
+      .catch((error: unknown) => {
+        // Keep the token if the server was merely unreachable.
+        if (error instanceof ApiError && error.status === 401) {
+          tokenStorage.clear()
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  // Any request answered with 401 (expired or revoked token) ends the session.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      tokenStorage.clear()
+      setUser(null)
+    })
+
+    return () => setUnauthorizedHandler(null)
   }, [])
 
   const value = useMemo<AuthContextValue>(
@@ -130,50 +78,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: user !== null,
       isLoading,
       signIn: async (email, password) => {
-        const normalizedEmail = normalizeEmail(email)
-        const storedUser = getAllUsers().find(
-          (candidate) => candidate.email === normalizedEmail,
-        )
-
-        if (!storedUser || storedUser.password !== password) {
-          throw new Error('The email or password is incorrect.')
-        }
-
-        const authenticatedUser = toAuthUser(storedUser)
-        localStorage.setItem(
-          currentUserStorageKey,
-          JSON.stringify(authenticatedUser),
-        )
-        setUser(authenticatedUser)
+        const session = await authService.signIn(email, password)
+        tokenStorage.set(session.token)
+        setUser(session.user)
       },
       signOut: () => {
-        localStorage.removeItem(currentUserStorageKey)
+        tokenStorage.clear()
         setUser(null)
       },
       signUp: async (name, email, password) => {
-        const normalizedEmail = normalizeEmail(email)
-        const users = getStoredUsers()
-
-        if (getAllUsers().some((candidate) => candidate.email === normalizedEmail)) {
-          throw new Error('An account with this email already exists.')
-        }
-
-        const newUser: StoredUser = {
-          createdAt: new Date().toISOString(),
-          email: normalizedEmail,
-          id: crypto.randomUUID(),
-          name: name.trim(),
-          password,
-          role: 'user',
-        }
-
-        localStorage.setItem(usersStorageKey, JSON.stringify([...users, newUser]))
-        const authenticatedUser = toAuthUser(newUser)
-        localStorage.setItem(
-          currentUserStorageKey,
-          JSON.stringify(authenticatedUser),
-        )
-        setUser(authenticatedUser)
+        const session = await authService.signUp(name, email, password)
+        tokenStorage.set(session.token)
+        setUser(session.user)
       },
       user,
     }),

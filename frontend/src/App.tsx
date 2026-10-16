@@ -12,6 +12,8 @@ import { AdminInsightsPage } from './pages/admin/AdminInsightsPage'
 import { AdminLayout } from './pages/admin/AdminLayout'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
+import { resetFilters } from './store/expenseFiltersSlice'
+import { useAppDispatch } from './store/hooks'
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
   return `rounded-lg px-3 py-2 text-sm no-underline ${
@@ -23,6 +25,7 @@ function navLinkClass({ isActive }: { isActive: boolean }) {
 
 function AppLayout() {
   const { signOut, user } = useAuth()
+  const dispatch = useAppDispatch()
 
   return (
     <div className="min-h-screen">
@@ -54,7 +57,14 @@ function AppLayout() {
         </nav>
         <div className="flex items-center gap-3 text-sm text-slate-500 sm:ml-4">
           <span>{user?.name}</span>
-          <Button onClick={signOut} size="sm" variant="secondary">
+          <Button
+            onClick={() => {
+              dispatch(resetFilters())
+              signOut()
+            }}
+            size="sm"
+            variant="secondary"
+          >
             Sign out
           </Button>
         </div>
