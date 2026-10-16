@@ -33,5 +33,10 @@
     { "userId": "user-admin", "categoryId": "cat-food", "title": "Team snacks", "amount": "15000.00", "paymentMethod": "card", "daysAgo": 1, "description": null, "notes": null },
     { "userId": "user-admin", "categoryId": "cat-transport", "title": "Ride share", "amount": "5000.00", "paymentMethod": "mobile_money", "daysAgo": 3, "description": null, "notes": null },
     { "userId": "user-admin", "categoryId": "cat-utilities", "title": "Phone plan", "amount": "10000.00", "paymentMethod": "bank_transfer", "daysAgo": 7, "description": null, "notes": null }
+  ],
+  "budgets": [
+    { "userId": "user-demo", "monthsAgo": 0, "amount": "700000.00" },
+    { "userId": "user-demo", "monthsAgo": 1, "amount": "650000.00" },
+    { "userId": "user-admin", "monthsAgo": 0, "amount": "100000.00" }
   ]
 }

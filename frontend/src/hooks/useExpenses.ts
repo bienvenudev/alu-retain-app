@@ -9,5 +9,5 @@ import { useAsyncData } from './useAsyncData'
 export function useExpenses(query: ExpenseQuery) {
   const fetchExpenses = useCallback(() => expensesService.list(query), [query])
 
-  return useAsyncData(fetchExpenses)
+  return useAsyncData(fetchExpenses, { keepPreviousData: true })
 }

@@ -3,13 +3,15 @@ import { z } from 'zod'
 import { type Expense, PAYMENT_METHODS } from '../types/domain'
 import { todayIso } from './format'
 
+export const amountSchema = z
+  .string()
+  .trim()
+  .min(1, 'Amount is required')
+  .regex(/^\d+(\.\d{1,2})?$/, 'Enter an amount like 5000 or 5000.50')
+  .refine((value) => Number(value) > 0, 'Amount must be greater than zero')
+
 export const expenseSchema = z.object({
-  amount: z
-    .string()
-    .trim()
-    .min(1, 'Amount is required')
-    .regex(/^\d+(\.\d{1,2})?$/, 'Enter an amount like 5000 or 5000.50')
-    .refine((value) => Number(value) > 0, 'Amount must be greater than zero'),
+  amount: amountSchema,
   categoryId: z.string().min(1, 'Choose a category'),
   description: z.string().trim().max(500, 'Keep this under 500 characters'),
   expenseDate: z

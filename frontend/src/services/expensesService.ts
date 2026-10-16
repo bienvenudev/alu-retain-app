@@ -1,4 +1,9 @@
-import { readDb, type StoredExpense, writeDb } from '../mock/db'
+import {
+  hydrateExpense,
+  readDb,
+  type StoredExpense,
+  writeDb,
+} from '../mock/db'
 import { requireCurrentUserId, simulateRequest } from '../mock/simulate'
 import type {
   Category,
@@ -11,16 +16,6 @@ import { ApiError } from './apiError'
 
 // The function bodies are the only part that changes when the Express API
 // replaces the mock. Ownership is enforced here the same way the server will.
-
-function toExpense(stored: StoredExpense, categories: Category[]): Expense {
-  const category = categories.find((item) => item.id === stored.categoryId)
-
-  if (!category) {
-    throw new ApiError('Expense references an unknown category.', 500)
-  }
-
-  return { ...stored, category }
-}
 
 function validate(input: ExpenseInput, categories: Category[]): void {
   const amount = Number(input.amount)
@@ -116,7 +111,7 @@ export const expensesService = {
       }
 
       writeDb({ ...db, expenses: [...db.expenses, created] })
-      return toExpense(created, db.categories)
+      return hydrateExpense(created, db.categories)
     })
   },
 
@@ -125,7 +120,7 @@ export const expensesService = {
       const userId = requireCurrentUserId()
       const db = readDb()
 
-      return toExpense(findOwned(db.expenses, id, userId), db.categories)
+      return hydrateExpense(findOwned(db.expenses, id, userId), db.categories)
     })
   },
 
@@ -136,7 +131,7 @@ export const expensesService = {
 
       const matching = db.expenses
         .filter((expense) => expense.userId === userId)
-        .map((expense) => toExpense(expense, db.categories))
+        .map((expense) => hydrateExpense(expense, db.categories))
         .filter((expense) => matchesQuery(expense, query))
         .sort(compareExpenses(query))
 
@@ -190,7 +185,7 @@ export const expensesService = {
           expense.id === id ? updated : expense,
         ),
       })
-      return toExpense(updated, db.categories)
+      return hydrateExpense(updated, db.categories)
     })
   },
 }

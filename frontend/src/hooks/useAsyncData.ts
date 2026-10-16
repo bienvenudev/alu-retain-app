@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getErrorMessage } from '../services/apiError'
 
@@ -10,15 +10,26 @@ export type AsyncState<T> =
 // Loads data through a service function and exposes loading / error / success.
 // `fetcher` must be referentially stable (a module-level function or
 // `useCallback`), because a new function identity triggers a reload.
-// A reload keeps the previous data on screen instead of blanking it.
-export function useAsyncData<T>(fetcher: () => Promise<T>) {
+// `reload` always keeps the current data on screen while refetching. When the
+// fetcher changes (a different month, a new filter), the old data is dropped
+// and the loading state shows, unless `keepPreviousData` is set.
+export function useAsyncData<T>(
+  fetcher: () => Promise<T>,
+  { keepPreviousData = false }: { keepPreviousData?: boolean } = {},
+) {
   const [state, setState] = useState<AsyncState<T>>({ status: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  const previousFetcher = useRef(fetcher)
 
   useEffect(() => {
     let ignore = false
+    const fetcherChanged = previousFetcher.current !== fetcher
+    previousFetcher.current = fetcher
+
     setState((previous) =>
-      previous.status === 'success' ? previous : { status: 'loading' },
+      previous.status === 'success' && (keepPreviousData || !fetcherChanged)
+        ? previous
+        : { status: 'loading' },
     )
 
     fetcher()
@@ -36,7 +47,7 @@ export function useAsyncData<T>(fetcher: () => Promise<T>) {
     return () => {
       ignore = true
     }
-  }, [fetcher, reloadKey])
+  }, [fetcher, keepPreviousData, reloadKey])
 
   const reload = useCallback(() => setReloadKey((key) => key + 1), [])
 

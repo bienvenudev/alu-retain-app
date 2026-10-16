@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './styles.css'
 import { App } from './App'
 import { AuthProvider } from './auth/AuthContext'
+import { SelectedMonthProvider } from './month/SelectedMonthContext'
 import { store } from './store'
 
 createRoot(document.getElementById('root')!).render(
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <SelectedMonthProvider>
+            <App />
+          </SelectedMonthProvider>
         </AuthProvider>
       </BrowserRouter>
     </Provider>

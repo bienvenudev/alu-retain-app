@@ -5,6 +5,8 @@ import { useAuth } from './auth/AuthContext'
 import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
 import { Button } from './components/ui/Button'
 import { PageCard, PageHeader } from './components/ui/PageCard'
+import { BudgetPage } from './pages/BudgetPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
 
@@ -71,24 +73,6 @@ function PagePlaceholder({
       <PageHeader title={title} />
       <p className="mt-5 leading-relaxed text-slate-600">{description}</p>
     </PageCard>
-  )
-}
-
-function DashboardPage() {
-  return (
-    <PagePlaceholder
-      description="Your monthly spending summary and recent expenses will appear here."
-      title="Dashboard"
-    />
-  )
-}
-
-function BudgetPage() {
-  return (
-    <PagePlaceholder
-      description="Set a monthly budget and track whether your spending is within, approaching, or over budget."
-      title="Budget"
-    />
   )
 }
 
