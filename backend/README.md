@@ -72,6 +72,20 @@ Expenses always belong to the signed-in user: another user's expense answers `40
 never its contents. Amounts are fixed-precision decimals sent as strings such as
 `"9000.50"`. `Uncategorized` can be neither renamed nor deleted.
 
+### Budgets, summary, and insights API
+
+| Method | Path                           | Who   | Description                                           |
+| ------ | ------------------------------ | ----- | ----------------------------------------------------- |
+| GET    | `/api/budgets/:year/:month`    | user  | Your budget for that month (404 if none is set)       |
+| PUT    | `/api/budgets/:year/:month`    | user  | Create or update it with `{ "amount": "600000" }`     |
+| GET    | `/api/summary?year=&month=`    | user  | Month totals, budget status, category breakdown, highest and recent expenses |
+| GET    | `/api/admin/insights`          | admin | Platform totals, top and bottom categories, recent expenses and users |
+
+Budget status follows the spent share of the budget: under 80% is `within`, from 80%
+up to (not including) 100% is `approaching`, and 100% or more is `over`. The summary's
+`percentSpent` is rounded down, and `remaining` is negative once the budget is
+exceeded. Money is compared in integer cents.
+
 ### Database setup
 
 Two PostgreSQL roles are used: `retain_migrator` owns the `retain` database and

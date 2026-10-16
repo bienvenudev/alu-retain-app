@@ -18,6 +18,7 @@ export function getBudgetStatus(
   return 'within'
 }
 
+// Rounded down so 99.9% never reads as 100% while the budget is still intact.
 export function getPercentSpent(spentCents: number, budgetCents: number) {
-  return Math.round((spentCents * 100) / budgetCents)
+  return Math.floor((spentCents * 100) / budgetCents)
 }
