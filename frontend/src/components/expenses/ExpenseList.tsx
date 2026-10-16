@@ -1,7 +1,42 @@
+import { Link } from 'react-router-dom'
+
 import { formatDate, formatMoney } from '../../lib/format'
 import { type Expense, PAYMENT_METHOD_LABELS } from '../../types/domain'
 
-export function ExpenseList({ expenses }: { expenses: Expense[] }) {
+interface ExpenseListProps {
+  expenses: Expense[]
+  onDelete: (expense: Expense) => void
+}
+
+function RowActions({
+  expense,
+  onDelete,
+}: {
+  expense: Expense
+  onDelete: (expense: Expense) => void
+}) {
+  return (
+    <div className="flex justify-end gap-2">
+      <Link
+        aria-label={`Edit ${expense.title}`}
+        className="btn btn-secondary btn-sm"
+        to={`/expenses/${expense.id}/edit`}
+      >
+        Edit
+      </Link>
+      <button
+        aria-label={`Delete ${expense.title}`}
+        className="btn-danger btn-sm"
+        onClick={() => onDelete(expense)}
+        type="button"
+      >
+        Delete
+      </button>
+    </div>
+  )
+}
+
+export function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
   return (
     <>
       <table className="hidden w-full text-left text-sm md:table">
@@ -11,7 +46,10 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
             <th className="py-2 pr-4 font-medium">Title</th>
             <th className="py-2 pr-4 font-medium">Category</th>
             <th className="py-2 pr-4 font-medium">Payment</th>
-            <th className="py-2 text-right font-medium">Amount</th>
+            <th className="py-2 pr-4 text-right font-medium">Amount</th>
+            <th className="py-2 text-right font-medium">
+              <span className="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -25,15 +63,18 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
               <td className="py-3 pr-4">
                 {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
               </td>
-              <td className="py-3 text-right font-medium tabular-nums">
+              <td className="py-3 pr-4 text-right font-medium tabular-nums">
                 {formatMoney(expense.amount)}
+              </td>
+              <td className="py-3">
+                <RowActions expense={expense} onDelete={onDelete} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <ul className="grid gap-3 md:hidden">
+      <ul className="m-0 grid list-none gap-3 p-0 md:hidden">
         {expenses.map((expense) => (
           <li
             className="rounded-lg border border-slate-200 p-3"
@@ -45,10 +86,11 @@ export function ExpenseList({ expenses }: { expenses: Expense[] }) {
                 {formatMoney(expense.amount)}
               </span>
             </div>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 mb-3 text-sm text-slate-500">
               {formatDate(expense.expenseDate)} · {expense.category.name} ·{' '}
               {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
             </p>
+            <RowActions expense={expense} onDelete={onDelete} />
           </li>
         ))}
       </ul>
