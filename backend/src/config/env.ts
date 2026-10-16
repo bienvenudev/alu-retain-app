@@ -3,7 +3,9 @@ import 'dotenv/config'
 import { z } from 'zod'
 
 const envSchema = z.object({
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(30),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // One origin, or several separated by commas.
   FRONTEND_ORIGIN: z.string().default('http://localhost:5173'),
   JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(604800),
   JWT_SECRET: z

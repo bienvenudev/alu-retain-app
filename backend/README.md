@@ -34,10 +34,11 @@ cp .env.example .env     # then fill in the values below
 | Variable                 | Purpose                                                          |
 | ------------------------ | ---------------------------------------------------------------- |
 | `PORT`                   | API port (default `3000`)                                        |
-| `FRONTEND_ORIGIN`        | Allowed CORS origin (default `http://localhost:5173`)            |
+| `FRONTEND_ORIGIN`        | Allowed CORS origin; several can be comma-separated (default `http://localhost:5173`) |
 | `DATABASE_URL`           | PostgreSQL connection string                                     |
 | `JWT_SECRET`             | Token signing secret, at least 32 characters (required)          |
 | `JWT_EXPIRES_IN_SECONDS` | Token lifetime (default 7 days)                                  |
+| `AUTH_RATE_LIMIT_MAX`    | Sign-in and sign-up attempts per address per 15 minutes (default 30) |
 | `ADMIN_EMAIL`            | Admin account created by `npm run db:seed` (optional)            |
 | `ADMIN_PASSWORD`         | Password for that admin account (optional)                       |
 | `DEMO_EMAIL`             | Demo user created by `npm run db:seed` with sample data (optional) |
@@ -63,7 +64,10 @@ npm run build    # compile to dist/
 npm start        # run the compiled build
 ```
 
-`GET /api/health` answers `{ "status": "ok" }`.
+`GET /api/health` answers `{ "status": "ok" }` without touching the database, so it is
+safe for uptime monitors. `GET /api/health/db` also runs a query and answers `503` if
+the database is unreachable. Sign-in and sign-up are rate limited per address (`429`
+when exceeded), and responses carry the standard Helmet security headers.
 
 The seed creates `Uncategorized` plus a few common categories. It also creates the
 admin user if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, and a demo user if

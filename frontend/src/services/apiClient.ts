@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { tokenStorage } from '../auth/tokenStorage'
 import { ApiError } from './apiError'
+import { requestFinished, requestStarted } from './requestActivity'
 
 interface ErrorBody {
   error?: { details?: Record<string, string[]>; message?: string }
@@ -9,6 +10,8 @@ interface ErrorBody {
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api',
+  // Generous, because a sleeping free-tier server takes up to a minute to wake.
+  timeout: 90_000,
 })
 
 let unauthorizedHandler: (() => void) | null = null
@@ -20,6 +23,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 }
 
 apiClient.interceptors.request.use((config) => {
+  requestStarted()
   const token = tokenStorage.get()
 
   if (token) {
@@ -31,8 +35,14 @@ apiClient.interceptors.request.use((config) => {
 
 // Every failure leaves here as an ApiError with a message fit to show a user.
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    requestFinished()
+
+    return response
+  },
   (error: unknown) => {
+    requestFinished()
+
     if (!axios.isAxiosError<ErrorBody>(error)) {
       throw error
     }

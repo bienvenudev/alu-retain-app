@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import { AuthForm } from './auth/AuthForm'
 import { useAuth } from './auth/AuthContext'
 import { AdminRoute, ProtectedRoute } from './auth/ProtectedRoute'
+import { ServerWakingNotice } from './components/ServerWakingNotice'
 import { Button } from './components/ui/Button'
 import { PageCard, PageHeader } from './components/ui/PageCard'
 import { BudgetPage } from './pages/BudgetPage'
@@ -105,26 +106,29 @@ function NotFoundPage() {
 
 export function App() {
   return (
-    <Routes>
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AppLayout />} path="/">
-          <Route element={<DashboardPage />} index />
-          <Route element={<DashboardPage />} path="dashboard" />
-          <Route element={<ExpensesPage />} path="expenses" />
-          <Route element={<NewExpensePage />} path="expenses/new" />
-          <Route element={<EditExpensePage />} path="expenses/:id/edit" />
-          <Route element={<BudgetPage />} path="budget" />
-          <Route element={<AdminRoute />}>
-            <Route element={<AdminLayout />} path="admin">
-              <Route element={<AdminInsightsPage />} index />
-              <Route element={<AdminCategoriesPage />} path="categories" />
+    <>
+      <ServerWakingNotice />
+      <Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />} path="/">
+            <Route element={<DashboardPage />} index />
+            <Route element={<DashboardPage />} path="dashboard" />
+            <Route element={<ExpensesPage />} path="expenses" />
+            <Route element={<NewExpensePage />} path="expenses/new" />
+            <Route element={<EditExpensePage />} path="expenses/:id/edit" />
+            <Route element={<BudgetPage />} path="budget" />
+            <Route element={<AdminRoute />}>
+              <Route element={<AdminLayout />} path="admin">
+                <Route element={<AdminInsightsPage />} index />
+                <Route element={<AdminCategoriesPage />} path="categories" />
+              </Route>
             </Route>
           </Route>
         </Route>
-      </Route>
-      <Route element={<SignInPage />} path="/signin" />
-      <Route element={<SignUpPage />} path="/signup" />
-      <Route element={<NotFoundPage />} path="*" />
-    </Routes>
+        <Route element={<SignInPage />} path="/signin" />
+        <Route element={<SignUpPage />} path="/signup" />
+        <Route element={<NotFoundPage />} path="*" />
+      </Routes>
+    </>
   )
 }

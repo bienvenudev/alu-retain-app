@@ -1,8 +1,10 @@
 import { Prisma } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { Router } from 'express'
+import { rateLimit } from 'express-rate-limit'
 import { z } from 'zod'
 
+import { env } from '../config/env.js'
 import { prisma } from '../db/prisma.js'
 import { HttpError } from '../lib/errors.js'
 import { getUserId, requireAuth, signToken } from '../middleware/auth.js'
@@ -34,9 +36,20 @@ const signInSchema = z.object({
 // Compared against when the email is unknown, so a miss takes as long as a hit.
 const dummyHash = bcrypt.hashSync('not-a-real-password', passwordRounds)
 
+// Slows down password guessing and mass sign-ups from a single address.
+const credentialsLimiter = rateLimit({
+  legacyHeaders: false,
+  limit: env.AUTH_RATE_LIMIT_MAX,
+  message: {
+    error: { message: 'Too many attempts. Please try again in a few minutes.' },
+  },
+  standardHeaders: 'draft-8',
+  windowMs: 15 * 60 * 1000,
+})
+
 export const authRouter = Router()
 
-authRouter.post('/signup', async (request, response) => {
+authRouter.post('/signup', credentialsLimiter, async (request, response) => {
   const { email, name, password } = signUpSchema.parse(request.body)
 
   try {
@@ -63,7 +76,7 @@ authRouter.post('/signup', async (request, response) => {
   }
 })
 
-authRouter.post('/signin', async (request, response) => {
+authRouter.post('/signin', credentialsLimiter, async (request, response) => {
   const { email, password } = signInSchema.parse(request.body)
   const user = await prisma.user.findUnique({ where: { email } })
   const passwordMatches = await bcrypt.compare(
