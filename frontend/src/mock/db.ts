@@ -34,7 +34,7 @@ interface SeedExpense {
   userId: string
 }
 
-const dbStorageKey = 'retain.mock.db.v1'
+const dbStorageKey = 'retain.mock.db.v2'
 
 function toIsoDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')

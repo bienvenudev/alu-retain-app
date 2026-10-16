@@ -2,17 +2,35 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ConfirmDialog } from '../components/ConfirmDialog'
+import { ExpenseFilters } from '../components/expenses/ExpenseFilters'
 import { ExpenseList } from '../components/expenses/ExpenseList'
+import { Pagination } from '../components/Pagination'
 import { Button, ButtonLink } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { PageCard, PageHeader } from '../components/ui/PageCard'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { useExpenses } from '../hooks/useExpenses'
 import { getErrorMessage } from '../services/apiError'
 import { expensesService } from '../services/expensesService'
-import type { Expense } from '../types/domain'
+import {
+  resetFilters,
+  selectExpenseFilters,
+  selectExpenseQuery,
+  selectHasActiveFilters,
+  setPage,
+  setSort,
+} from '../store/expenseFiltersSlice'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import type { Expense, SortField } from '../types/domain'
 
 export function ExpensesPage() {
-  const { reload, state } = useExpenses()
+  const dispatch = useAppDispatch()
+  const filters = useAppSelector(selectExpenseFilters)
+  const query = useAppSelector(selectExpenseQuery)
+  const hasActiveFilters = useAppSelector(selectHasActiveFilters)
+  // Wait for typing to pause before asking the service for new results.
+  const debouncedQuery = useDebouncedValue(query, 250)
+  const { reload, state } = useExpenses(debouncedQuery)
   const location = useLocation()
   const navigate = useNavigate()
   const [notice, setNotice] = useState<string | null>(
@@ -26,6 +44,25 @@ export function ExpensesPage() {
   useEffect(() => {
     navigate(location.pathname, { replace: true, state: null })
   }, [location.pathname, navigate])
+
+  // If the last item on a page was deleted, step back to the last real page.
+  useEffect(() => {
+    if (
+      state.status === 'success' &&
+      state.data.totalPages > 0 &&
+      state.data.page > state.data.totalPages
+    ) {
+      dispatch(setPage(state.data.totalPages))
+    }
+  }, [dispatch, state])
+
+  function handleSort(field: SortField) {
+    const isSameField = filters.sortBy === field
+    const direction =
+      isSameField && filters.sortDirection === 'desc' ? 'asc' : 'desc'
+
+    dispatch(setSort({ sortBy: field, sortDirection: direction }))
+  }
 
   function closeDeleteDialog() {
     setPendingDelete(null)
@@ -76,6 +113,8 @@ export function ExpensesPage() {
         </div>
       )}
 
+      <ExpenseFilters />
+
       <div className="mt-6">
         {state.status === 'loading' && (
           <p aria-live="polite" className="text-slate-600" role="status">
@@ -90,14 +129,41 @@ export function ExpensesPage() {
           </div>
         )}
 
-        {state.status === 'success' && state.data.length === 0 && (
-          <p className="text-slate-600">
-            You have no expenses yet. Add your first one to get started.
-          </p>
+        {state.status === 'success' && state.data.total === 0 && (
+          <div className="grid justify-start gap-3">
+            <p className="text-slate-600">
+              {hasActiveFilters
+                ? 'No expenses match your filters.'
+                : 'You have no expenses yet. Add your first one to get started.'}
+            </p>
+            {hasActiveFilters && (
+              <Button
+                onClick={() => dispatch(resetFilters())}
+                variant="secondary"
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
         )}
 
-        {state.status === 'success' && state.data.length > 0 && (
-          <ExpenseList expenses={state.data} onDelete={setPendingDelete} />
+        {state.status === 'success' && state.data.items.length > 0 && (
+          <>
+            <ExpenseList
+              expenses={state.data.items}
+              onDelete={setPendingDelete}
+              onSort={handleSort}
+              sortBy={filters.sortBy}
+              sortDirection={filters.sortDirection}
+            />
+            <Pagination
+              onPageChange={(page) => dispatch(setPage(page))}
+              page={state.data.page}
+              pageSize={state.data.pageSize}
+              total={state.data.total}
+              totalPages={state.data.totalPages}
+            />
+          </>
         )}
       </div>
 

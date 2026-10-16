@@ -62,12 +62,12 @@ export function ExpenseForm({
       </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField error={errors.amount?.message} label="Amount">
+        <FormField error={errors.amount?.message} label="Amount (RWF)">
           <input
             className={fieldClass}
           aria-invalid={errors.amount ? true : undefined}
             inputMode="decimal"
-            placeholder="0.00"
+            placeholder="0"
             {...register('amount')}
           />
         </FormField>

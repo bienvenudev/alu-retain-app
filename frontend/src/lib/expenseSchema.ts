@@ -8,7 +8,7 @@ export const expenseSchema = z.object({
     .string()
     .trim()
     .min(1, 'Amount is required')
-    .regex(/^\d+(\.\d{1,2})?$/, 'Enter an amount like 12.50')
+    .regex(/^\d+(\.\d{1,2})?$/, 'Enter an amount like 5000 or 5000.50')
     .refine((value) => Number(value) > 0, 'Amount must be greater than zero'),
   categoryId: z.string().min(1, 'Choose a category'),
   description: z.string().trim().max(500, 'Keep this under 500 characters'),

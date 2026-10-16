@@ -1,10 +1,18 @@
 import { formatDate, formatMoney } from '../../lib/format'
-import { type Expense, PAYMENT_METHOD_LABELS } from '../../types/domain'
+import {
+  type Expense,
+  PAYMENT_METHOD_LABELS,
+  type SortDirection,
+  type SortField,
+} from '../../types/domain'
 import { Button, ButtonLink } from '../ui/Button'
 
 interface ExpenseListProps {
   expenses: Expense[]
   onDelete: (expense: Expense) => void
+  onSort: (field: SortField) => void
+  sortBy: SortField
+  sortDirection: SortDirection
 }
 
 function RowActions({
@@ -36,17 +44,68 @@ function RowActions({
   )
 }
 
-export function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
+interface SortHeaderProps {
+  align?: 'right'
+  field: SortField
+  label: string
+  onSort: (field: SortField) => void
+  sortBy: SortField
+  sortDirection: SortDirection
+}
+
+function SortHeader({
+  align,
+  field,
+  label,
+  onSort,
+  sortBy,
+  sortDirection,
+}: SortHeaderProps) {
+  const isActive = sortBy === field
+  const ariaSort = !isActive
+    ? 'none'
+    : sortDirection === 'asc'
+      ? 'ascending'
+      : 'descending'
+
+  return (
+    <th
+      aria-sort={ariaSort}
+      className={`py-2 pr-4 font-medium ${align === 'right' ? 'text-right' : ''}`}
+    >
+      <button
+        className="inline-flex cursor-pointer items-center gap-1 hover:text-slate-900"
+        onClick={() => onSort(field)}
+        type="button"
+      >
+        {label}
+        <span aria-hidden="true">
+          {isActive ? (sortDirection === 'asc' ? '↑' : '↓') : '↕'}
+        </span>
+      </button>
+    </th>
+  )
+}
+
+export function ExpenseList({
+  expenses,
+  onDelete,
+  onSort,
+  sortBy,
+  sortDirection,
+}: ExpenseListProps) {
+  const sortProps = { onSort, sortBy, sortDirection }
+
   return (
     <>
       <table className="hidden w-full text-left text-sm md:table">
         <thead className="border-b border-slate-200 text-slate-500">
           <tr>
-            <th className="py-2 pr-4 font-medium">Date</th>
+            <SortHeader field="date" label="Date" {...sortProps} />
             <th className="py-2 pr-4 font-medium">Title</th>
             <th className="py-2 pr-4 font-medium">Category</th>
             <th className="py-2 pr-4 font-medium">Payment</th>
-            <th className="py-2 pr-4 text-right font-medium">Amount</th>
+            <SortHeader align="right" field="amount" label="Amount" {...sortProps} />
             <th className="py-2 text-right font-medium">
               <span className="sr-only">Actions</span>
             </th>
@@ -63,7 +122,7 @@ export function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
               <td className="py-3 pr-4">
                 {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
               </td>
-              <td className="py-3 pr-4 text-right font-medium tabular-nums">
+              <td className="py-3 pr-4 text-right font-medium whitespace-nowrap tabular-nums">
                 {formatMoney(expense.amount)}
               </td>
               <td className="py-3">
@@ -82,7 +141,7 @@ export function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
           >
             <div className="flex items-start justify-between gap-3">
               <span className="font-medium">{expense.title}</span>
-              <span className="font-medium tabular-nums">
+              <span className="font-medium whitespace-nowrap tabular-nums">
                 {formatMoney(expense.amount)}
               </span>
             </div>

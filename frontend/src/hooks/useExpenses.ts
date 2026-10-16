@@ -1,8 +1,13 @@
+import { useCallback } from 'react'
+
 import { expensesService } from '../services/expensesService'
+import type { ExpenseQuery } from '../types/domain'
 import { useAsyncData } from './useAsyncData'
 
-const fetchExpenses = () => expensesService.list()
+// `query` must be referentially stable (for example a memoized selector
+// result), because a new object triggers a reload.
+export function useExpenses(query: ExpenseQuery) {
+  const fetchExpenses = useCallback(() => expensesService.list(query), [query])
 
-export function useExpenses() {
   return useAsyncData(fetchExpenses)
 }

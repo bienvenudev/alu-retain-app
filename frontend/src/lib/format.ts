@@ -1,5 +1,9 @@
+// Rwandan franc, shown as "RWF 12,500" (fractions only when present).
 const currencyFormatter = new Intl.NumberFormat('en-US', {
-  currency: 'USD',
+  currency: 'RWF',
+  currencyDisplay: 'code',
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
   style: 'currency',
 })
 

@@ -1,6 +1,12 @@
 import { readDb, type StoredExpense, writeDb } from '../mock/db'
 import { requireCurrentUserId, simulateRequest } from '../mock/simulate'
-import type { Category, Expense, ExpenseInput } from '../types/domain'
+import type {
+  Category,
+  Expense,
+  ExpenseInput,
+  ExpenseQuery,
+  PaginatedResult,
+} from '../types/domain'
 import { ApiError } from './apiError'
 
 // The function bodies are the only part that changes when the Express API
@@ -29,6 +35,49 @@ function validate(input: ExpenseInput, categories: Category[]): void {
 
   if (!categories.some((category) => category.id === input.categoryId)) {
     throw new ApiError('Choose a valid category.', 400)
+  }
+}
+
+function matchesQuery(expense: Expense, query: ExpenseQuery): boolean {
+  const needle = query.search?.trim().toLowerCase()
+  const amount = Number(expense.amount)
+
+  if (needle) {
+    const haystack = [
+      expense.title,
+      expense.description ?? '',
+      expense.notes ?? '',
+      expense.category.name,
+    ]
+      .join(' ')
+      .toLowerCase()
+
+    if (!haystack.includes(needle)) {
+      return false
+    }
+  }
+
+  return (
+    (!query.categoryId || expense.category.id === query.categoryId) &&
+    (!query.paymentMethod || expense.paymentMethod === query.paymentMethod) &&
+    (!query.startDate || expense.expenseDate >= query.startDate) &&
+    (!query.endDate || expense.expenseDate <= query.endDate) &&
+    (query.minAmount === undefined || amount >= query.minAmount) &&
+    (query.maxAmount === undefined || amount <= query.maxAmount)
+  )
+}
+
+function compareExpenses(query: ExpenseQuery) {
+  const direction = query.sortDirection === 'asc' ? 1 : -1
+
+  return (a: Expense, b: Expense) => {
+    const difference =
+      query.sortBy === 'amount'
+        ? Number(a.amount) - Number(b.amount)
+        : a.expenseDate.localeCompare(b.expenseDate) ||
+          a.createdAt.localeCompare(b.createdAt)
+
+    return difference * direction
   }
 }
 
@@ -80,15 +129,26 @@ export const expensesService = {
     })
   },
 
-  list(): Promise<Expense[]> {
+  list(query: ExpenseQuery): Promise<PaginatedResult<Expense>> {
     return simulateRequest(() => {
       const userId = requireCurrentUserId()
       const db = readDb()
 
-      return db.expenses
+      const matching = db.expenses
         .filter((expense) => expense.userId === userId)
-        .sort((a, b) => b.expenseDate.localeCompare(a.expenseDate))
         .map((expense) => toExpense(expense, db.categories))
+        .filter((expense) => matchesQuery(expense, query))
+        .sort(compareExpenses(query))
+
+      const start = (query.page - 1) * query.pageSize
+
+      return {
+        items: matching.slice(start, start + query.pageSize),
+        page: query.page,
+        pageSize: query.pageSize,
+        total: matching.length,
+        totalPages: Math.ceil(matching.length / query.pageSize),
+      }
     })
   },
 

@@ -42,3 +42,30 @@ export interface ExpenseInput {
   paymentMethod: PaymentMethod
   title: string
 }
+
+export type SortField = 'amount' | 'date'
+export type SortDirection = 'asc' | 'desc'
+
+// Query contract for listing expenses; the Express API will accept the same
+// fields as URL query parameters.
+export interface ExpenseQuery {
+  categoryId?: string
+  endDate?: string // YYYY-MM-DD, inclusive
+  maxAmount?: number
+  minAmount?: number
+  page: number
+  pageSize: number
+  paymentMethod?: PaymentMethod
+  search?: string
+  sortBy: SortField
+  sortDirection: SortDirection
+  startDate?: string // YYYY-MM-DD, inclusive
+}
+
+export interface PaginatedResult<T> {
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
