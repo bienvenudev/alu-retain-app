@@ -17,6 +17,33 @@ The API health check is available at `GET /api/health`. Copy `.env.example` to
 Prisma is used for PostgreSQL access. Run `npm run db:validate` to validate the
 schema and `npm run db:generate` to generate the typed client.
 
+### Environment variables
+
+| Variable                 | Purpose                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `PORT`                   | API port (default `3000`)                                        |
+| `FRONTEND_ORIGIN`        | Allowed CORS origin (default `http://localhost:5173`)            |
+| `DATABASE_URL`           | PostgreSQL connection string                                     |
+| `JWT_SECRET`             | Token signing secret, at least 32 characters (required)          |
+| `JWT_EXPIRES_IN_SECONDS` | Token lifetime (default 7 days)                                  |
+| `ADMIN_EMAIL`            | Admin account created by `npm run db:seed` (optional)            |
+| `ADMIN_PASSWORD`         | Password for that admin account (optional)                       |
+
+The API refuses to start if the configuration is invalid.
+
+### Authentication API
+
+| Method | Path               | Auth   | Description                                  |
+| ------ | ------------------ | ------ | -------------------------------------------- |
+| POST   | `/api/auth/signup` | public | Create a user account; returns `{ token, user }` |
+| POST   | `/api/auth/signin` | public | Sign in; returns `{ token, user }`           |
+| GET    | `/api/auth/me`     | Bearer | The signed-in user, `{ user }`               |
+
+Send the token as `Authorization: Bearer <token>`. Passwords are hashed with
+bcrypt; the role is read from the database on every request, so the token alone
+never grants admin access. Errors always look like
+`{ "error": { "message": "...", "details": { "field": ["..."] } } }`.
+
 ### Database setup
 
 Two PostgreSQL roles are used: `retain_migrator` owns the `retain` database and
