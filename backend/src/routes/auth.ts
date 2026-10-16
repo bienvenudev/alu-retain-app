@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { prisma } from '../db/prisma.js'
 import { HttpError } from '../lib/errors.js'
-import { requireAuth, signToken } from '../middleware/auth.js'
+import { getUserId, requireAuth, signToken } from '../middleware/auth.js'
 import { serializeUser } from '../serializers/user.js'
 
 const passwordRounds = 12
@@ -80,7 +80,7 @@ authRouter.post('/signin', async (request, response) => {
 
 authRouter.get('/me', requireAuth, async (request, response) => {
   const user = await prisma.user.findUnique({
-    where: { id: request.auth?.id },
+    where: { id: getUserId(request) },
   })
 
   if (!user) {

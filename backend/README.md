@@ -1,23 +1,35 @@
 # Retain backend
 
-The Retain backend is a TypeScript API built with Node.js and Express. It will
-provide authentication, expense, budget, category, and dashboard endpoints
-backed by PostgreSQL.
+The Retain backend is a REST API built with Node.js, Express 5, and TypeScript. It
+stores data in PostgreSQL through Prisma and handles authentication, expenses,
+categories, budgets, monthly summaries, and admin insights. It enforces
+authentication, ownership, and admin access itself, independent of the frontend.
 
 ## Getting started
 
-```bash
-npm install
-npm run dev
+You need Node.js 22 and PostgreSQL.
+
+### 1. Create the database and roles
+
+Two PostgreSQL roles are used: `retain_migrator` owns the database and tables and
+runs migrations, and `retain_app` is the least-privileged role the running API uses.
+As a superuser (`psql -U postgres`):
+
+```sql
+CREATE ROLE retain_migrator LOGIN PASSWORD 'choose-a-password';
+CREATE ROLE retain_app LOGIN PASSWORD 'choose-another-password';
+CREATE DATABASE retain OWNER retain_migrator;
+GRANT CONNECT ON DATABASE retain TO retain_app;
 ```
 
-The API health check is available at `GET /api/health`. Copy `.env.example` to
-`.env` to configure the local port, frontend origin, and PostgreSQL connection.
+### 2. Configure the environment
 
-Prisma is used for PostgreSQL access. Run `npm run db:validate` to validate the
-schema and `npm run db:generate` to generate the typed client.
+```bash
+npm install
+cp .env.example .env     # then fill in the values below
+```
 
-### Environment variables
+#### Environment variables
 
 | Variable                 | Purpose                                                          |
 | ------------------------ | ---------------------------------------------------------------- |
@@ -31,7 +43,31 @@ schema and `npm run db:generate` to generate the typed client.
 
 The API refuses to start if the configuration is invalid.
 
-### Authentication API
+### 3. Migrate, seed, and run
+
+Point `DATABASE_URL` at `retain_migrator` for this step:
+
+```bash
+npx prisma migrate deploy                            # create the tables
+npm run db:seed                                      # default categories and the admin user
+psql "$DATABASE_URL" -f prisma/app-role-grants.sql   # once: let retain_app read and write
+```
+
+Then point `DATABASE_URL` at `retain_app` and start the API:
+
+```bash
+npm run dev      # http://localhost:3000, restarts on changes
+npm run build    # compile to dist/
+npm start        # run the compiled build
+```
+
+`GET /api/health` answers `{ "status": "ok" }`. The seed creates `Uncategorized` plus a
+few common categories, and the admin user if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are
+set. Re-running it never changes an existing account.
+
+## API reference
+
+### Authentication
 
 | Method | Path               | Auth   | Description                                  |
 | ------ | ------------------ | ------ | -------------------------------------------- |
@@ -44,7 +80,7 @@ bcrypt; the role is read from the database on every request, so the token alone
 never grants admin access. Errors always look like
 `{ "error": { "message": "...", "details": { "field": ["..."] } } }`.
 
-### Categories and expenses API
+### Categories and expenses
 
 All routes below need `Authorization: Bearer <token>`.
 
@@ -72,7 +108,7 @@ Expenses always belong to the signed-in user: another user's expense answers `40
 never its contents. Amounts are fixed-precision decimals sent as strings such as
 `"9000.50"`. `Uncategorized` can be neither renamed nor deleted.
 
-### Budgets, summary, and insights API
+### Budgets, summary, and insights
 
 | Method | Path                           | Who   | Description                                           |
 | ------ | ------------------------------ | ----- | ----------------------------------------------------- |
@@ -86,30 +122,15 @@ up to (not including) 100% is `approaching`, and 100% or more is `over`. The sum
 `percentSpent` is rounded down, and `remaining` is negative once the budget is
 exceeded. Money is compared in integer cents.
 
-### Database setup
+## Changing the database schema
 
-Two PostgreSQL roles are used: `retain_migrator` owns the `retain` database and
-the tables and runs migrations, and `retain_app` is the least-privileged role the
-running API should use.
-
-```bash
-npx prisma migrate deploy   # apply migrations (with DATABASE_URL = retain_migrator)
-npm run db:seed             # create the "Uncategorized" category
-psql "$DATABASE_URL" -f prisma/app-role-grants.sql   # once: let retain_app read/write
-```
-
-Point `DATABASE_URL` at `retain_migrator` to migrate and seed, and at `retain_app`
-when running the API.
-
-### Creating new migrations
-
-`prisma migrate dev` needs a shadow database, and `retain_migrator` is not allowed
-to create databases. The simplest fix is to allow it once, as a superuser:
+Edit `prisma/schema.prisma`, then create a migration. `prisma migrate dev` needs a
+shadow database, and `retain_migrator` is not allowed to create databases, so allow it
+once as a superuser:
 
 ```sql
 ALTER ROLE retain_migrator CREATEDB;
 ```
 
-Then `npx prisma migrate dev --name <change>` works normally. (The first migration
-was generated with `prisma migrate diff --from-empty --to-schema-datamodel` and
-applied with `prisma migrate deploy`, which do not need a shadow database.)
+Then run `npx prisma migrate dev --name <change>`. Other useful scripts:
+`npm run db:validate` and `npm run db:generate`.

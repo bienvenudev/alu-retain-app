@@ -2,10 +2,9 @@ import { Router } from 'express'
 
 import { prisma } from '../db/prisma.js'
 import { getBudgetStatus, getPercentSpent } from '../lib/budget.js'
-import { HttpError } from '../lib/errors.js'
 import { fromCents, toCents } from '../lib/money.js'
 import { monthRange, periodSchema } from '../lib/period.js'
-import { requireAuth } from '../middleware/auth.js'
+import { getUserId, requireAuth } from '../middleware/auth.js'
 import { expenseInclude, serializeExpense } from '../serializers/expense.js'
 
 const recentLimit = 5
@@ -17,12 +16,7 @@ summaryRouter.use(requireAuth)
 // Everything the dashboard and budget pages need for one month, computed in
 // the database and read in a single transaction so the numbers agree.
 summaryRouter.get('/', async (request, response) => {
-  const userId = request.auth?.id
-
-  if (!userId) {
-    throw new HttpError(401, 'You must be signed in.')
-  }
-
+  const userId = getUserId(request)
   const { month, year } = periodSchema.parse(request.query)
   const where = { expenseDate: monthRange(year, month), userId }
 

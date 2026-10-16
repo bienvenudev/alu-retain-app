@@ -61,8 +61,8 @@ export interface ExpenseInput {
 export type SortField = 'amount' | 'date'
 export type SortDirection = 'asc' | 'desc'
 
-// Query contract for listing expenses; the Express API will accept the same
-// fields as URL query parameters.
+// Query contract for listing expenses; the Express API accepts these fields as
+// URL query parameters.
 export interface ExpenseQuery {
   categoryId?: string
   endDate?: string // YYYY-MM-DD, inclusive
@@ -101,8 +101,8 @@ export interface CategoryTotal {
   total: string
 }
 
-// Everything the dashboard and budget pages need for one month. The Express
-// API will serve this from a single summary endpoint.
+// Everything the dashboard and budget pages need for one month, served by
+// GET /api/summary.
 export interface MonthlySummary {
   budget: string | null
   byCategory: CategoryTotal[] // largest first

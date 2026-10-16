@@ -6,7 +6,7 @@ import { prisma } from '../db/prisma.js'
 import { PAYMENT_METHODS } from '../lib/domain.js'
 import { HttpError } from '../lib/errors.js'
 import { dateString, parseId, toUtcDate } from '../lib/validation.js'
-import { requireAuth } from '../middleware/auth.js'
+import { getUserId, requireAuth } from '../middleware/auth.js'
 import { expenseInclude, serializeExpense } from '../serializers/expense.js'
 
 const optionalText = z
@@ -50,14 +50,6 @@ export const expensesRouter = Router()
 // read or change another user's expenses.
 expensesRouter.use(requireAuth)
 
-function currentUserId(userId: string | undefined): string {
-  if (!userId) {
-    throw new HttpError(401, 'You must be signed in.')
-  }
-
-  return userId
-}
-
 async function assertCategoryExists(categoryId: string) {
   const category = await prisma.category.findUnique({
     select: { id: true },
@@ -85,7 +77,7 @@ async function findOwnedExpense(id: string, userId: string) {
 }
 
 expensesRouter.get('/', async (request, response) => {
-  const userId = currentUserId(request.auth?.id)
+  const userId = getUserId(request)
   const query = listQuerySchema.parse(request.query)
 
   const where: Prisma.ExpenseWhereInput = {
@@ -143,14 +135,14 @@ expensesRouter.get('/', async (request, response) => {
 expensesRouter.get('/:id', async (request, response) => {
   const expense = await findOwnedExpense(
     parseId(request.params.id, 'Expense'),
-    currentUserId(request.auth?.id),
+    getUserId(request),
   )
 
   response.json(serializeExpense(expense))
 })
 
 expensesRouter.post('/', async (request, response) => {
-  const userId = currentUserId(request.auth?.id)
+  const userId = getUserId(request)
   const input = expenseInputSchema.parse(request.body)
   await assertCategoryExists(input.categoryId)
 
@@ -163,7 +155,7 @@ expensesRouter.post('/', async (request, response) => {
 })
 
 expensesRouter.put('/:id', async (request, response) => {
-  const userId = currentUserId(request.auth?.id)
+  const userId = getUserId(request)
   const id = parseId(request.params.id, 'Expense')
   const input = expenseInputSchema.parse(request.body)
   await findOwnedExpense(id, userId)
@@ -180,7 +172,7 @@ expensesRouter.put('/:id', async (request, response) => {
 
 expensesRouter.delete('/:id', async (request, response) => {
   const id = parseId(request.params.id, 'Expense')
-  await findOwnedExpense(id, currentUserId(request.auth?.id))
+  await findOwnedExpense(id, getUserId(request))
   await prisma.expense.delete({ where: { id } })
 
   response.status(204).end()

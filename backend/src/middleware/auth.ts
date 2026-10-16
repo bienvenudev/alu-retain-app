@@ -75,6 +75,15 @@ export const requireAuth: RequestHandler = async (request, _response, next) => {
   next()
 }
 
+// The signed-in user's id. Only valid on routes behind `requireAuth`.
+export function getUserId(request: Request): string {
+  if (!request.auth) {
+    throw new HttpError(401, 'You must be signed in.')
+  }
+
+  return request.auth.id
+}
+
 // Use after `requireAuth`.
 export const requireAdmin: RequestHandler = (request, _response, next) => {
   if (request.auth?.role !== 'ADMIN') {

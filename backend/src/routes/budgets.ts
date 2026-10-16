@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { prisma } from '../db/prisma.js'
 import { HttpError } from '../lib/errors.js'
 import { periodSchema } from '../lib/period.js'
-import { requireAuth } from '../middleware/auth.js'
+import { getUserId, requireAuth } from '../middleware/auth.js'
 
 const budgetInputSchema = z.object({
   amount: z
@@ -29,19 +29,11 @@ export const budgetsRouter = Router()
 
 budgetsRouter.use(requireAuth)
 
-function currentUserId(userId: string | undefined): string {
-  if (!userId) {
-    throw new HttpError(401, 'You must be signed in.')
-  }
-
-  return userId
-}
-
 budgetsRouter.get('/:year/:month', async (request, response) => {
   const { month, year } = periodSchema.parse(request.params)
   const budget = await prisma.budget.findUnique({
     where: {
-      userId_year_month: { month, userId: currentUserId(request.auth?.id), year },
+      userId_year_month: { month, userId: getUserId(request), year },
     },
   })
 
@@ -53,7 +45,7 @@ budgetsRouter.get('/:year/:month', async (request, response) => {
 })
 
 budgetsRouter.put('/:year/:month', async (request, response) => {
-  const userId = currentUserId(request.auth?.id)
+  const userId = getUserId(request)
   const { month, year } = periodSchema.parse(request.params)
   const { amount } = budgetInputSchema.parse(request.body)
 

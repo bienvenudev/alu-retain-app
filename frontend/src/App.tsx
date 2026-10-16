@@ -76,21 +76,6 @@ function AppLayout() {
   )
 }
 
-function PagePlaceholder({
-  description,
-  title,
-}: {
-  description: string
-  title: string
-}) {
-  return (
-    <PageCard>
-      <PageHeader title={title} />
-      <p className="mt-5 leading-relaxed text-slate-600">{description}</p>
-    </PageCard>
-  )
-}
-
 function SignInPage() {
   return <AuthForm mode="signin" />
 }

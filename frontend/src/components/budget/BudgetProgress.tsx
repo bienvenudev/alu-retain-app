@@ -22,7 +22,7 @@ const statusStyles: Record<
   },
 }
 
-export function StatusBadge({ status }: { status: BudgetStatus }) {
+function StatusBadge({ status }: { status: BudgetStatus }) {
   return (
     <span
       className={`rounded-full px-3 py-1 text-sm font-bold ${statusStyles[status].badge}`}
