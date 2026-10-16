@@ -16,5 +16,6 @@ The API health check is available at `GET /api/health`. Copy `.env.example` to
 
 Prisma is used for PostgreSQL access. Run `npm run db:validate` to validate the
 schema and `npm run db:generate` to generate the typed client. Database
-migrations will be added after the local PostgreSQL role and database are
-configured.
+migrations are created with `prisma migrate dev` (the database role needs the
+`CREATEDB` privilege so Prisma can manage its own shadow database) and applied
+in production with `prisma migrate deploy`.
