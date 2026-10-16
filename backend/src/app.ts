@@ -3,7 +3,10 @@ import express from 'express'
 
 import { env } from './config/env.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
+import { adminRouter } from './routes/admin.js'
 import { authRouter } from './routes/auth.js'
+import { categoriesRouter } from './routes/categories.js'
+import { expensesRouter } from './routes/expenses.js'
 
 export function createApp() {
   const app = express()
@@ -15,6 +18,9 @@ export function createApp() {
     response.json({ status: 'ok' })
   })
   app.use('/api/auth', authRouter)
+  app.use('/api/categories', categoriesRouter)
+  app.use('/api/expenses', expensesRouter)
+  app.use('/api/admin', adminRouter)
 
   app.use(notFound)
   app.use(errorHandler)

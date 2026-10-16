@@ -44,6 +44,34 @@ bcrypt; the role is read from the database on every request, so the token alone
 never grants admin access. Errors always look like
 `{ "error": { "message": "...", "details": { "field": ["..."] } } }`.
 
+### Categories and expenses API
+
+All routes below need `Authorization: Bearer <token>`.
+
+| Method | Path                         | Who   | Description                                              |
+| ------ | ---------------------------- | ----- | -------------------------------------------------------- |
+| GET    | `/api/categories`            | user  | All categories, `[{ id, name }]`                         |
+| GET    | `/api/expenses`              | user  | Your expenses, filtered, sorted, and paginated           |
+| GET    | `/api/expenses/:id`          | owner | One expense                                              |
+| POST   | `/api/expenses`              | user  | Create an expense (201)                                  |
+| PUT    | `/api/expenses/:id`          | owner | Replace an expense's fields                              |
+| DELETE | `/api/expenses/:id`          | owner | Delete an expense (204)                                  |
+| GET    | `/api/admin/categories`      | admin | Categories with `expenseCount`                           |
+| POST   | `/api/admin/categories`      | admin | Create a category (201)                                  |
+| PATCH  | `/api/admin/categories/:id`  | admin | Rename a category                                        |
+| DELETE | `/api/admin/categories/:id`  | admin | Delete; its expenses move to `Uncategorized` (one transaction) |
+
+`GET /api/expenses` query parameters (all optional): `search` (title, description,
+notes, or category name), `categoryId`, `paymentMethod` (`cash`, `card`,
+`mobile_money`, `bank_transfer`), `startDate` / `endDate` (`YYYY-MM-DD`,
+inclusive), `minAmount` / `maxAmount`, `sortBy` (`date` or `amount`),
+`sortDirection` (`asc` or `desc`), `page`, and `pageSize` (max 100). The response is
+`{ items, page, pageSize, total, totalPages }`.
+
+Expenses always belong to the signed-in user: another user's expense answers `404`,
+never its contents. Amounts are fixed-precision decimals sent as strings such as
+`"9000.50"`. `Uncategorized` can be neither renamed nor deleted.
+
 ### Database setup
 
 Two PostgreSQL roles are used: `retain_migrator` owns the `retain` database and
