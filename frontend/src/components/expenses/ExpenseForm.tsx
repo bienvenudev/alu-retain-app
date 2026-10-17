@@ -13,6 +13,8 @@ import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_METHODS,
 } from '../../types/domain'
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning'
+import { AmountInput } from '../AmountInput'
 import { FormField } from '../FormField'
 import { fieldClass } from '../fieldStyles'
 import { Button, ButtonLink } from '../ui/Button'
@@ -33,13 +35,15 @@ export function ExpenseForm({
 }: ExpenseFormProps) {
   const [apiError, setApiError] = useState<string | null>(null)
   const {
-    formState: { errors, isSubmitting },
+    formState: { errors, isDirty, isSubmitting },
     handleSubmit,
     register,
   } = useForm<ExpenseFormValues>({
     defaultValues,
     resolver: zodResolver(expenseSchema),
   })
+
+  useUnsavedChangesWarning(isDirty && !isSubmitting)
 
   const submit = handleSubmit(async (values) => {
     setApiError(null)
@@ -62,14 +66,8 @@ export function ExpenseForm({
       </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField error={errors.amount?.message} label="Amount (RWF)">
-          <input
-            className={fieldClass}
-          aria-invalid={errors.amount ? true : undefined}
-            inputMode="decimal"
-            placeholder="0"
-            {...register('amount')}
-          />
+        <FormField error={errors.amount?.message} label="Amount">
+          <AmountInput {...register('amount')} />
         </FormField>
         <FormField error={errors.expenseDate?.message} label="Date">
           <input

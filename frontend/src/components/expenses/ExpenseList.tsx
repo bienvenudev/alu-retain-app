@@ -1,4 +1,6 @@
-import { formatDate, formatMoney } from '../../lib/format'
+import { ArrowDown, ArrowUp, ArrowUpDown, Pencil, Trash2 } from 'lucide-react'
+
+import { formatDate } from '../../lib/format'
 import {
   type Expense,
   PAYMENT_METHOD_LABELS,
@@ -6,6 +8,8 @@ import {
   type SortField,
 } from '../../types/domain'
 import { Button, ButtonLink } from '../ui/Button'
+import { Money } from '../ui/Money'
+import { Skeleton } from '../ui/Skeleton'
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -23,34 +27,35 @@ function RowActions({
   onDelete: (expense: Expense) => void
 }) {
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-end gap-1">
       <ButtonLink
         aria-label={`Edit ${expense.title}`}
+        iconOnly
         size="sm"
         to={`/expenses/${expense.id}/edit`}
-        variant="secondary"
+        variant="ghost"
       >
-        Edit
+        <Pencil aria-hidden="true" className="size-4" />
       </ButtonLink>
       <Button
         aria-label={`Delete ${expense.title}`}
+        iconOnly
         onClick={() => onDelete(expense)}
         size="sm"
-        variant="danger"
+        variant="ghost-danger"
       >
-        Delete
+        <Trash2 aria-hidden="true" className="size-4" />
       </Button>
     </div>
   )
 }
 
-interface SortHeaderProps {
-  align?: 'right'
-  field: SortField
-  label: string
-  onSort: (field: SortField) => void
-  sortBy: SortField
-  sortDirection: SortDirection
+function CategoryPill({ name }: { name: string }) {
+  return (
+    <span className="inline-block max-w-full truncate rounded-full bg-raised px-2.5 py-0.5 text-xs font-medium text-ink-2">
+      {name}
+    </span>
+  )
 }
 
 function SortHeader({
@@ -60,8 +65,16 @@ function SortHeader({
   onSort,
   sortBy,
   sortDirection,
-}: SortHeaderProps) {
+}: {
+  align?: 'right'
+  field: SortField
+  label: string
+  onSort: (field: SortField) => void
+  sortBy: SortField
+  sortDirection: SortDirection
+}) {
   const isActive = sortBy === field
+  const Icon = !isActive ? ArrowUpDown : sortDirection === 'asc' ? ArrowUp : ArrowDown
   const ariaSort = !isActive
     ? 'none'
     : sortDirection === 'asc'
@@ -71,17 +84,17 @@ function SortHeader({
   return (
     <th
       aria-sort={ariaSort}
-      className={`py-2 pr-4 font-medium ${align === 'right' ? 'text-right' : ''}`}
+      className={`py-3 pr-4 font-medium ${align === 'right' ? 'text-right' : ''}`}
     >
       <button
-        className="inline-flex cursor-pointer items-center gap-1 hover:text-ink"
+        className={`inline-flex cursor-pointer items-center gap-1.5 transition-colors duration-150 hover:text-ink ${
+          isActive ? 'text-ink' : ''
+        }`}
         onClick={() => onSort(field)}
         type="button"
       >
         {label}
-        <span aria-hidden="true">
-          {isActive ? (sortDirection === 'asc' ? '↑' : '↓') : '↕'}
-        </span>
+        <Icon aria-hidden="true" className="size-3.5" />
       </button>
     </th>
   )
@@ -102,30 +115,37 @@ export function ExpenseList({
         <thead className="border-b border-line text-ink-3">
           <tr>
             <SortHeader field="date" label="Date" {...sortProps} />
-            <th className="py-2 pr-4 font-medium">Title</th>
-            <th className="py-2 pr-4 font-medium">Category</th>
-            <th className="py-2 pr-4 font-medium">Payment</th>
+            <th className="py-3 pr-4 font-medium">Title</th>
+            <th className="py-3 pr-4 font-medium">Category</th>
+            <th className="py-3 pr-4 font-medium">Payment</th>
             <SortHeader align="right" field="amount" label="Amount" {...sortProps} />
-            <th className="py-2 text-right font-medium">
+            <th className="py-3">
               <span className="sr-only">Actions</span>
             </th>
           </tr>
         </thead>
         <tbody>
           {expenses.map((expense) => (
-            <tr className="border-b border-line" key={expense.id}>
-              <td className="py-3 pr-4 whitespace-nowrap">
+            <tr
+              className="border-b border-line transition-colors duration-150 hover:bg-surface"
+              key={expense.id}
+            >
+              <td className="py-3 pr-4 whitespace-nowrap text-ink-2">
                 {formatDate(expense.expenseDate)}
               </td>
-              <td className="py-3 pr-4 font-medium">{expense.title}</td>
-              <td className="py-3 pr-4">{expense.category.name}</td>
+              <td className="max-w-[18rem] py-3 pr-4 font-medium">
+                <span className="block truncate">{expense.title}</span>
+              </td>
               <td className="py-3 pr-4">
+                <CategoryPill name={expense.category.name} />
+              </td>
+              <td className="py-3 pr-4 text-ink-2">
                 {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
               </td>
-              <td className="py-3 pr-4 text-right font-medium whitespace-nowrap tabular-nums">
-                {formatMoney(expense.amount)}
+              <td className="py-3 pr-4 text-right font-medium">
+                <Money amount={expense.amount} />
               </td>
-              <td className="py-3">
+              <td className="py-2">
                 <RowActions expense={expense} onDelete={onDelete} />
               </td>
             </tr>
@@ -136,23 +156,40 @@ export function ExpenseList({
       <ul className="m-0 grid list-none gap-3 p-0 md:hidden">
         {expenses.map((expense) => (
           <li
-            className="rounded-lg border border-line p-3"
+            className="rounded-xl border border-line bg-surface p-4"
             key={expense.id}
           >
             <div className="flex items-start justify-between gap-3">
-              <span className="font-medium">{expense.title}</span>
-              <span className="font-medium whitespace-nowrap tabular-nums">
-                {formatMoney(expense.amount)}
-              </span>
+              <p className="min-w-0 truncate font-medium">{expense.title}</p>
+              <Money amount={expense.amount} className="shrink-0 font-medium" />
             </div>
-            <p className="mt-1 mb-3 text-sm text-ink-3">
-              {formatDate(expense.expenseDate)} · {expense.category.name} ·{' '}
-              {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
-            </p>
-            <RowActions expense={expense} onDelete={onDelete} />
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-ink-3">
+              <CategoryPill name={expense.category.name} />
+              <span>{PAYMENT_METHOD_LABELS[expense.paymentMethod]}</span>
+              <span>{formatDate(expense.expenseDate)}</span>
+            </div>
+            <div className="mt-2 border-t border-line pt-2">
+              <RowActions expense={expense} onDelete={onDelete} />
+            </div>
           </li>
         ))}
       </ul>
     </>
+  )
+}
+
+// Shaped like the loaded list so nothing jumps when the data arrives.
+export function ExpenseListSkeleton() {
+  return (
+    <div>
+      <p className="sr-only" role="status">
+        Loading expenses…
+      </p>
+      <div className="grid gap-px">
+        {[0, 1, 2, 3, 4, 5].map((row) => (
+          <Skeleton className="h-14 w-full" key={row} />
+        ))}
+      </div>
+    </div>
   )
 }

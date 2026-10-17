@@ -19,6 +19,7 @@ export function useAsyncData<T>(
 ) {
   const [state, setState] = useState<AsyncState<T>>({ status: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const previousFetcher = useRef(fetcher)
 
   useEffect(() => {
@@ -26,21 +27,24 @@ export function useAsyncData<T>(
     const fetcherChanged = previousFetcher.current !== fetcher
     previousFetcher.current = fetcher
 
-    setState((previous) =>
-      previous.status === 'success' && (keepPreviousData || !fetcherChanged)
+    setState((previous) => {
+      return previous.status === 'success' && (keepPreviousData || !fetcherChanged)
         ? previous
-        : { status: 'loading' },
-    )
+        : { status: 'loading' }
+    })
+    setIsRefreshing(true)
 
     fetcher()
       .then((data) => {
         if (!ignore) {
           setState({ data, status: 'success' })
+          setIsRefreshing(false)
         }
       })
       .catch((error: unknown) => {
         if (!ignore) {
           setState({ message: getErrorMessage(error), status: 'error' })
+          setIsRefreshing(false)
         }
       })
 
@@ -51,5 +55,7 @@ export function useAsyncData<T>(
 
   const reload = useCallback(() => setReloadKey((key) => key + 1), [])
 
-  return { reload, state }
+  // True while data is being fetched again; `state` keeps the old data until
+  // the new data arrives, so a list can dim instead of disappearing.
+  return { isRefreshing, reload, state }
 }

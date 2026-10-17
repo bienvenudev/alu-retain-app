@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 import { amountSchema } from '../../lib/expenseSchema'
 import { getErrorMessage } from '../../services/apiError'
-import { fieldClass } from '../fieldStyles'
+import { AmountInput } from '../AmountInput'
 import { FormField } from '../FormField'
 import { Button } from '../ui/Button'
 import { ErrorMessage } from '../ui/ErrorMessage'
@@ -42,14 +42,8 @@ export function BudgetForm({ initialAmount, onSubmit }: BudgetFormProps) {
 
   return (
     <form className="grid gap-4" noValidate onSubmit={submit}>
-      <FormField error={errors.amount?.message} label="Monthly budget (RWF)">
-        <input
-          aria-invalid={errors.amount ? true : undefined}
-          className={fieldClass}
-          inputMode="decimal"
-          placeholder="e.g. 600000"
-          {...register('amount')}
-        />
+      <FormField error={errors.amount?.message} label="Monthly budget">
+        <AmountInput placeholder="e.g. 600000" {...register('amount')} />
       </FormField>
       {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
       <div>

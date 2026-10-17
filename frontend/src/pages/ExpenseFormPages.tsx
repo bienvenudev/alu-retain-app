@@ -1,11 +1,13 @@
+import { ChevronLeft } from 'lucide-react'
 import { type PropsWithChildren, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { ExpenseForm } from '../components/expenses/ExpenseForm'
 import { Button, ButtonLink } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { Page, PageHeader } from '../components/ui/Page'
 import { Panel } from '../components/ui/Panel'
+import { Skeleton } from '../components/ui/Skeleton'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { useCategories } from '../hooks/useCategories'
 import {
@@ -15,12 +17,40 @@ import {
 import { expensesService } from '../services/expensesService'
 import type { ExpenseInput } from '../types/domain'
 
-function FormShell({ children, title }: PropsWithChildren<{ title: string }>) {
+function FormShell({
+  children,
+  description,
+  title,
+}: PropsWithChildren<{ description?: string; title: string }>) {
   return (
     <Page>
-      <PageHeader title={title} />
+      <Link
+        className="mb-4 inline-flex items-center gap-1 text-sm text-ink-3 no-underline transition-colors duration-150 hover:text-ink"
+        to="/expenses"
+      >
+        <ChevronLeft aria-hidden="true" className="size-4" />
+        Expenses
+      </Link>
+      <PageHeader description={description} title={title} />
       <Panel>{children}</Panel>
     </Page>
+  )
+}
+
+// Shaped like the form so the page does not jump when it loads.
+function FormSkeleton() {
+  return (
+    <div className="grid gap-5">
+      <p className="sr-only" role="status">
+        Loading…
+      </p>
+      {[0, 1, 2, 3].map((field) => (
+        <div key={field}>
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="mt-2 h-11 w-full" />
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -51,11 +81,7 @@ export function NewExpensePage() {
 
   return (
     <FormShell title="Add expense">
-      {categories.state.status === 'loading' && (
-        <p aria-live="polite" className="text-ink-2" role="status">
-          Loading…
-        </p>
-      )}
+      {categories.state.status === 'loading' && <FormSkeleton />}
       {categories.state.status === 'error' && (
         <LoadError
           message={categories.state.message}
@@ -101,15 +127,16 @@ export function EditExpensePage() {
         : null
 
   return (
-    <FormShell title="Edit expense">
+    <FormShell
+      description={
+        expense.state.status === 'success' ? expense.state.data.title : undefined
+      }
+      title="Edit expense"
+    >
       {error && <LoadError message={error} onRetry={retry} />}
       {!error &&
         (expense.state.status === 'loading' ||
-          categories.state.status === 'loading') && (
-          <p aria-live="polite" className="text-ink-2" role="status">
-            Loading…
-          </p>
-        )}
+          categories.state.status === 'loading') && <FormSkeleton />}
       {expense.state.status === 'success' &&
         categories.state.status === 'success' && (
           <ExpenseForm

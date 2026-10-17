@@ -1,3 +1,5 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
 import { Button } from './ui/Button'
 
 interface PaginationProps {
@@ -21,22 +23,23 @@ export function Pagination({
   return (
     <nav
       aria-label="Pagination"
-      className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-ink-2"
+      className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-ink-3"
     >
       <p>
         Showing {first}–{last} of {total}
       </p>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
           size="sm"
           variant="secondary"
         >
+          <ChevronLeft aria-hidden="true" className="size-4" />
           Previous
         </Button>
-        <span>
-          Page {page} of {totalPages}
+        <span className="px-1 tabular-nums">
+          {page} / {totalPages}
         </span>
         <Button
           disabled={page >= totalPages}
@@ -45,6 +48,7 @@ export function Pagination({
           variant="secondary"
         >
           Next
+          <ChevronRight aria-hidden="true" className="size-4" />
         </Button>
       </div>
     </nav>

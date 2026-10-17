@@ -1,12 +1,14 @@
+import { Plus, Receipt, SearchX } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ExpenseFilters } from '../components/expenses/ExpenseFilters'
-import { ExpenseList } from '../components/expenses/ExpenseList'
+import { ExpenseList, ExpenseListSkeleton } from '../components/expenses/ExpenseList'
 import { Pagination } from '../components/Pagination'
 import { Button, ButtonLink } from '../components/ui/Button'
-import { ErrorMessage } from '../components/ui/ErrorMessage'
+import { EmptyState } from '../components/ui/EmptyState'
+import { ErrorState } from '../components/ui/ErrorState'
 import { Notice } from '../components/ui/Notice'
 import { Page, PageHeader } from '../components/ui/Page'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
@@ -31,7 +33,7 @@ export function ExpensesPage() {
   const hasActiveFilters = useAppSelector(selectHasActiveFilters)
   // Wait for typing to pause before asking the service for new results.
   const debouncedQuery = useDebouncedValue(query, 250)
-  const { reload, state } = useExpenses(debouncedQuery)
+  const { isRefreshing, reload, state } = useExpenses(debouncedQuery)
   const location = useLocation()
   const navigate = useNavigate()
   const [notice, setNotice] = useState<string | null>(
@@ -90,10 +92,22 @@ export function ExpensesPage() {
     }
   }
 
+  const total = state.status === 'success' ? state.data.total : null
+
   return (
     <Page wide>
       <PageHeader
-        actions={<ButtonLink to="/expenses/new">Add expense</ButtonLink>}
+        actions={
+          <ButtonLink to="/expenses/new">
+            <Plus aria-hidden="true" className="size-4" />
+            Add expense
+          </ButtonLink>
+        }
+        description={
+          total === null
+            ? undefined
+            : `${total} ${hasActiveFilters ? 'matching ' : ''}${total === 1 ? 'expense' : 'expenses'}`
+        }
         title="Expenses"
       />
 
@@ -105,67 +119,72 @@ export function ExpensesPage() {
 
       <ExpenseFilters />
 
-      <div>
-        {state.status === 'loading' && (
-          <p aria-live="polite" className="text-ink-2" role="status">
-            Loading expenses…
-          </p>
-        )}
+      {state.status === 'loading' && <ExpenseListSkeleton />}
 
-        {state.status === 'error' && (
-          <div className="grid justify-start gap-3">
-            <ErrorMessage>{state.message}</ErrorMessage>
-            <Button onClick={reload}>Try again</Button>
-          </div>
-        )}
+      {state.status === 'error' && (
+        <ErrorState
+          message={state.message}
+          onRetry={reload}
+          title="We could not load your expenses"
+        />
+      )}
 
-        {state.status === 'success' && state.data.total === 0 && (
-          <div className="grid justify-start gap-3">
-            <p className="text-ink-2">
-              {hasActiveFilters
-                ? 'No expenses match your filters.'
-                : 'You have no expenses yet. Add your first one to get started.'}
-            </p>
-            {hasActiveFilters && (
+      {state.status === 'success' && state.data.total === 0 && (
+        hasActiveFilters ? (
+          <EmptyState
+            action={
               <Button
                 onClick={() => dispatch(resetFilters())}
                 variant="secondary"
               >
-                Clear filters
+                Clear all filters
               </Button>
-            )}
-          </div>
-        )}
+            }
+            description="Try a different search, or remove some filters to see more of your expenses."
+            icon={SearchX}
+            title="No expenses match"
+          />
+        ) : (
+          <EmptyState
+            action={<ButtonLink to="/expenses/new">Add your first expense</ButtonLink>}
+            description="Record what you spend and it will show up here, ready to search, filter, and total up."
+            icon={Receipt}
+            title="No expenses yet"
+          />
+        )
+      )}
 
-        {state.status === 'success' && state.data.items.length > 0 && (
-          <>
-            <ExpenseList
-              expenses={state.data.items}
-              onDelete={setPendingDelete}
-              onSort={handleSort}
-              sortBy={filters.sortBy}
-              sortDirection={filters.sortDirection}
-            />
-            <Pagination
-              onPageChange={(page) => dispatch(setPage(page))}
-              page={state.data.page}
-              pageSize={state.data.pageSize}
-              total={state.data.total}
-              totalPages={state.data.totalPages}
-            />
-          </>
-        )}
-      </div>
+      {state.status === 'success' && state.data.items.length > 0 && (
+        <div
+          aria-busy={isRefreshing}
+          className={`transition-opacity duration-150 ${isRefreshing ? 'opacity-60' : ''}`}
+        >
+          <ExpenseList
+            expenses={state.data.items}
+            onDelete={setPendingDelete}
+            onSort={handleSort}
+            sortBy={filters.sortBy}
+            sortDirection={filters.sortDirection}
+          />
+          <Pagination
+            onPageChange={(page) => dispatch(setPage(page))}
+            page={state.data.page}
+            pageSize={state.data.pageSize}
+            total={state.data.total}
+            totalPages={state.data.totalPages}
+          />
+        </div>
+      )}
 
       {pendingDelete && (
         <ConfirmDialog
-          confirmLabel="Delete"
+          confirmLabel="Delete expense"
           error={deleteError}
           isBusy={isDeleting}
           message={`“${pendingDelete.title}” will be permanently removed.`}
           onCancel={closeDeleteDialog}
           onConfirm={confirmDelete}
-          title="Delete expense?"
+          title="Delete this expense?"
         />
       )}
     </Page>
