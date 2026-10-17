@@ -27,6 +27,20 @@
   --color-ok: #34d399;
   --color-warn: #fbbf24;
   --color-bad: #fb7185;
+
+  /* The one entrance motion: content rises a few pixels while fading in. */
+  --animate-rise: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 @layer base {

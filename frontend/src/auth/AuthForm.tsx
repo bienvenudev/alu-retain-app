@@ -1,134 +1,174 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { LoaderCircle } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 
-import { FormField } from '../components/FormField'
 import { fieldClass } from '../components/fieldStyles'
+import { FormField } from '../components/FormField'
+import { PasswordInput } from '../components/PasswordInput'
 import { Button } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
+import {
+  type SignInValues,
+  signInSchema,
+  type SignUpValues,
+  signUpSchema,
+} from '../lib/authSchemas'
+import { ApiError, getErrorMessage } from '../services/apiError'
 import { useAuth } from './AuthContext'
 
 interface AuthFormProps {
   mode: 'signin' | 'signup'
 }
 
+type AuthFormValues = SignInValues & Partial<Pick<SignUpValues, 'name'>>
+
 export function AuthForm({ mode }: AuthFormProps) {
-  const { signIn, signUp } = useAuth()
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   const isSignUp = mode === 'signup'
+  const { isAuthenticated, isLoading, signIn, signUp } = useAuth()
+  const location = useLocation()
+  const [formError, setFormError] = useState<string | null>(null)
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<AuthFormValues>({
+    defaultValues: { email: '', name: '', password: '' },
+    resolver: zodResolver(isSignUp ? signUpSchema : signInSchema),
+  })
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setError(null)
+  const destination =
+    (location.state as { from?: { pathname?: string } } | null)?.from
+      ?.pathname ?? '/dashboard'
 
-    if (isSignUp && name.trim().length < 2) {
-      setError('Please enter your name.')
-      return
-    }
+  // Someone who is already signed in has no use for this page; this also moves
+  // a user on to where they were headed once sign-in succeeds.
+  if (isAuthenticated) {
+    return <Navigate replace to={destination} />
+  }
 
-    if (!email.includes('@')) {
-      setError('Please enter a valid email address.')
-      return
-    }
-
-    if (isSignUp && password.length < 8) {
-      setError('Your password must be at least 8 characters.')
-      return
-    }
-
-    setIsSubmitting(true)
+  const submit = handleSubmit(async (values) => {
+    setFormError(null)
 
     try {
       if (isSignUp) {
-        await signUp(name, email, password)
+        await signUp(values.name ?? '', values.email, values.password)
       } else {
-        await signIn(email, password)
+        await signIn(values.email, values.password)
       }
-
-      const destination =
-        (location.state as { from?: { pathname?: string } } | null)?.from
-          ?.pathname ?? '/dashboard'
-      navigate(destination, { replace: true })
-    } catch (submissionError) {
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : 'Unable to complete authentication.',
-      )
-    } finally {
-      setIsSubmitting(false)
+    } catch (error) {
+      // A taken email belongs to the email field; anything else is about the form.
+      if (error instanceof ApiError && error.status === 409) {
+        setError('email', { message: error.message }, { shouldFocus: true })
+      } else {
+        setFormError(getErrorMessage(error))
+      }
     }
-  }
+  })
 
   return (
-    <main className="grid min-h-screen place-items-center p-6">
-      <section className="w-full max-w-md rounded-xl border border-line bg-surface p-6 sm:p-8">
-        <h1 className="font-display text-3xl font-semibold">
-          {isSignUp ? 'Create your account' : 'Welcome back'}
-        </h1>
-        <p className="mt-2 text-ink-2">
-          {isSignUp
-            ? 'Start tracking your spending in one place.'
-            : 'Sign in to manage your expenses and budget.'}
+    <main className="relative isolate grid min-h-screen place-items-center overflow-hidden px-4 py-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--color-accent)_28%,transparent),transparent_65%)]"
+      />
+
+      {isLoading ? (
+        <p
+          aria-live="polite"
+          className="flex items-center gap-2 text-ink-2"
+          role="status"
+        >
+          <LoaderCircle
+            aria-hidden="true"
+            className="size-4 motion-safe:animate-spin"
+          />
+          Restoring your session…
         </p>
-        <form className="mt-7 grid gap-4" onSubmit={handleSubmit}>
-          {isSignUp && (
-            <FormField label="Name">
-              <input
-                autoComplete="name"
-                className={fieldClass}
-                onChange={(event) => setName(event.target.value)}
-                required
-                value={name}
-              />
-            </FormField>
-          )}
-          <FormField label="Email">
-            <input
-              autoComplete="email"
-              className={fieldClass}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              type="email"
-              value={email}
-            />
-          </FormField>
-          <FormField label="Password">
-            <input
-              autoComplete={isSignUp ? 'new-password' : 'current-password'}
-              className={fieldClass}
-              minLength={isSignUp ? 8 : undefined}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              type="password"
-              value={password}
-            />
-          </FormField>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <Button loading={isSubmitting} type="submit">
-            {isSubmitting
-              ? 'Please wait…'
-              : isSignUp
-                ? 'Create account'
-                : 'Sign in'}
-          </Button>
-        </form>
-        <p className="mt-6 text-center text-sm text-ink-3">
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+      ) : (
+        <div className="w-full max-w-sm motion-safe:animate-rise">
           <Link
-            className="font-medium text-accent-ink"
-            to={isSignUp ? '/signin' : '/signup'}
+            className="mx-auto mb-8 flex w-fit items-center gap-2.5 font-display text-2xl font-semibold text-ink no-underline"
+            to="/"
           >
-            {isSignUp ? 'Sign in' : 'Sign up'}
+            <span
+              aria-hidden="true"
+              className="grid size-9 place-items-center rounded-lg bg-accent text-lg font-bold text-on-accent"
+            >
+              R
+            </span>
+            Retain
           </Link>
-        </p>
-      </section>
+
+          <section className="rounded-xl border border-line bg-surface p-6 sm:p-8">
+            <h1 className="font-display text-3xl font-semibold">
+              {isSignUp ? 'Create your account' : 'Welcome back'}
+            </h1>
+            <p className="mt-2 text-ink-2">
+              {isSignUp
+                ? 'Track your spending and stay within budget.'
+                : 'Sign in to see where your money went this month.'}
+            </p>
+
+            <form className="mt-7 grid gap-4" noValidate onSubmit={submit}>
+              {isSignUp && (
+                <FormField error={errors.name?.message} label="Name">
+                  <input
+                    autoComplete="name"
+                    className={fieldClass}
+                    {...register('name')}
+                  />
+                </FormField>
+              )}
+              <FormField error={errors.email?.message} label="Email">
+                <input
+                  autoComplete="email"
+                  className={fieldClass}
+                  inputMode="email"
+                  spellCheck={false}
+                  type="email"
+                  {...register('email')}
+                />
+              </FormField>
+              <div className="grid gap-1.5">
+                <FormField error={errors.password?.message} label="Password">
+                  <PasswordInput
+                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                    {...register('password')}
+                  />
+                </FormField>
+                {isSignUp && !errors.password && (
+                  <p className="text-xs text-ink-3">Use at least 8 characters.</p>
+                )}
+              </div>
+
+              {formError && <ErrorMessage>{formError}</ErrorMessage>}
+
+              <Button loading={isSubmitting} type="submit">
+                {isSubmitting
+                  ? isSignUp
+                    ? 'Creating account…'
+                    : 'Signing in…'
+                  : isSignUp
+                    ? 'Create account'
+                    : 'Sign in'}
+              </Button>
+            </form>
+          </section>
+
+          <p className="mt-6 text-center text-sm text-ink-3">
+            {isSignUp ? 'Already have an account?' : 'New to Retain?'}{' '}
+            <Link
+              className="font-medium text-accent-ink"
+              to={isSignUp ? '/signin' : '/signup'}
+            >
+              {isSignUp ? 'Sign in' : 'Create an account'}
+            </Link>
+          </p>
+        </div>
+      )}
     </main>
   )
 }
