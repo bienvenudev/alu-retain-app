@@ -61,7 +61,7 @@ export function CategoryNameForm({
   })
 
   return (
-    <form className="grid gap-2" noValidate onSubmit={submit}>
+    <form className="grid grid-cols-1 gap-2" noValidate onSubmit={submit}>
       <div className="flex flex-wrap items-start gap-2">
         <input
           aria-invalid={errors.name ? true : undefined}

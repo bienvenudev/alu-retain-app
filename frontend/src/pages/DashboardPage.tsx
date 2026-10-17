@@ -11,6 +11,7 @@ import { ButtonLink } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { Page, PageHeader } from '../components/ui/Page'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { useSelectedMonth } from '../month/SelectedMonthContext'
 import type { MonthlySummary } from '../types/domain'
@@ -42,7 +43,7 @@ function DashboardContent({
         <DashboardHero animate={animate} monthLabel={monthLabel} summary={summary} />
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <section
           aria-labelledby="by-category"
           className={`border-t border-line pt-6 ${rise(90).className ?? ''}`}
@@ -72,6 +73,7 @@ function DashboardContent({
 }
 
 export function DashboardPage() {
+  useDocumentTitle('Dashboard')
   const { user } = useAuth()
   const { month, year } = useSelectedMonth()
   const { reload, state } = useMonthlySummary(year, month)

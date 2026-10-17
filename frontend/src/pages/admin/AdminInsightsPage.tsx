@@ -6,6 +6,7 @@ import { Money } from '../../components/ui/Money'
 import { Panel } from '../../components/ui/Panel'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { Stat } from '../../components/ui/Stat'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAdminInsights } from '../../hooks/useAdminInsights'
 import { formatDate } from '../../lib/format'
 import type { CategoryTotal } from '../../types/domain'
@@ -48,7 +49,7 @@ function RankedCategories({ items }: { items: CategoryTotal[] }) {
 
 function InsightsSkeleton() {
   return (
-    <div className="grid gap-8">
+    <div className="grid grid-cols-1 gap-8">
       <p className="sr-only" role="status">
         Loading insights…
       </p>
@@ -62,11 +63,11 @@ function InsightsSkeleton() {
           ))}
         </div>
       </Panel>
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {[0, 1].map((column) => (
           <div className="border-t border-line pt-6" key={column}>
             <Skeleton className="h-5 w-40" />
-            <div className="mt-5 grid gap-3">
+            <div className="mt-5 grid grid-cols-1 gap-3">
               {[0, 1, 2, 3, 4].map((row) => (
                 <Skeleton className="h-9 w-full" key={row} />
               ))}
@@ -79,6 +80,7 @@ function InsightsSkeleton() {
 }
 
 export function AdminInsightsPage() {
+  useDocumentTitle('Admin insights')
   const { reload, state } = useAdminInsights()
 
   if (state.status === 'loading') {
@@ -98,29 +100,29 @@ export function AdminInsightsPage() {
   const insights = state.data
 
   return (
-    <div className="grid gap-8">
+    <div className="grid grid-cols-1 gap-8">
       <Panel>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
           <Stat label="Registered users">
-            <span className="font-display text-3xl">{insights.userCount}</span>
+            <span className="font-display text-2xl sm:text-3xl">{insights.userCount}</span>
           </Stat>
           <Stat label="Total expenses">
-            <span className="font-display text-3xl">
+            <span className="font-display text-2xl sm:text-3xl">
               {insights.totalExpenseCount}
             </span>
           </Stat>
           <Stat label="Total spent">
-            <Money amount={insights.totalSpent} className="font-display text-3xl" />
+            <Money amount={insights.totalSpent} className="font-display text-2xl sm:text-3xl" />
           </Stat>
           <Stat label="Expenses this month">
-            <span className="font-display text-3xl">
+            <span className="font-display text-2xl sm:text-3xl">
               {insights.currentMonthExpenseCount}
             </span>
           </Stat>
         </dl>
       </Panel>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <Section title="Top categories">
           <RankedCategories items={insights.topCategories} />
         </Section>
@@ -136,7 +138,7 @@ export function AdminInsightsPage() {
         />
       </Section>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <Section title="Recently added expenses">
           <ul className="m-0 list-none p-0">
             {insights.recentExpenses.map((expense) => (

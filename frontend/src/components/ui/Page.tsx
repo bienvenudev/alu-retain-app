@@ -27,7 +27,9 @@ export function PageHeader({
         <h1 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">
           {title}
         </h1>
-        {description && <p className="mt-2 text-ink-2">{description}</p>}
+        {description && (
+          <p className="mt-2 text-ink-2 [overflow-wrap:anywhere]">{description}</p>
+        )}
       </div>
       {actions}
     </header>

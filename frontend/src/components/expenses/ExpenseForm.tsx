@@ -56,7 +56,7 @@ export function ExpenseForm({
   })
 
   return (
-    <form className="grid gap-4" noValidate onSubmit={submit}>
+    <form className="grid grid-cols-1 gap-4" noValidate onSubmit={submit}>
       <FormField error={errors.title?.message} label="Title">
         <input
           className={fieldClass}
@@ -65,7 +65,7 @@ export function ExpenseForm({
         />
       </FormField>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField error={errors.amount?.message} label="Amount">
           <AmountInput {...register('amount')} />
         </FormField>
@@ -79,7 +79,7 @@ export function ExpenseForm({
         </FormField>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField error={errors.categoryId?.message} label="Category">
           <select
             className={fieldClass}

@@ -20,6 +20,7 @@ import { BudgetPage } from './pages/BudgetPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
+import { useDocumentTitle } from './hooks/useDocumentTitle'
 import { resetFilters } from './store/expenseFiltersSlice'
 import { useAppDispatch } from './store/hooks'
 
@@ -38,7 +39,7 @@ function Brand() {
     >
       <span
         aria-hidden="true"
-        className="grid size-8 place-items-center rounded-lg bg-accent text-base font-bold text-on-accent"
+        className="grid grid-cols-1 size-8 place-items-center rounded-lg bg-accent text-base font-bold text-on-accent"
       >
         R
       </span>
@@ -84,7 +85,7 @@ function AppLayout() {
         <div className="px-3">
           <Brand />
         </div>
-        <nav aria-label="Main navigation" className="mt-8 grid gap-1">
+        <nav aria-label="Main navigation" className="mt-8 grid grid-cols-1 gap-1">
           {items.map(({ icon: Icon, label, to }) => (
             <NavLink className={sidebarLinkClass} key={to} to={to}>
               <Icon aria-hidden="true" className="size-[18px]" />
@@ -95,7 +96,7 @@ function AppLayout() {
         <div className="mt-auto border-t border-line px-3 pt-4">
           <p className="truncate text-sm font-medium">{user?.name}</p>
           <p className="truncate text-xs text-ink-3">{user?.email}</p>
-          <div className="mt-3 grid">
+          <div className="mt-3 grid grid-cols-1">
             <Button onClick={handleSignOut} size="sm" variant="ghost">
               <LogOut aria-hidden="true" className="size-4" />
               Sign out
@@ -147,6 +148,7 @@ function SignUpPage() {
 }
 
 function NotFoundPage() {
+  useDocumentTitle('Page not found')
   return (
     <main className="flex min-h-screen justify-center p-6 pt-24">
       <Page>

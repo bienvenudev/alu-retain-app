@@ -12,7 +12,7 @@ export function CategoryBreakdown({
   const totalCents = toCents(totalSpent)
 
   return (
-    <ul className="m-0 grid list-none gap-4 p-0">
+    <ul className="m-0 grid grid-cols-1 list-none gap-4 p-0">
       {items.map(({ category, count, total }) => {
         const share = totalCents > 0 ? (toCents(total) / totalCents) * 100 : 0
 

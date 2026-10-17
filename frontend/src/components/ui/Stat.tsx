@@ -13,8 +13,14 @@ export function Stat({
   return (
     <div className="min-w-0">
       <dt className="text-sm text-ink-3">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold">{children}</dd>
-      {hint && <p className="mt-0.5 truncate text-sm text-ink-3">{hint}</p>}
+      <dd className="mt-1 text-lg font-semibold">
+        {children}
+        {hint && (
+          <span className="mt-0.5 block truncate text-sm font-normal text-ink-3">
+            {hint}
+          </span>
+        )}
+      </dd>
     </div>
   )
 }

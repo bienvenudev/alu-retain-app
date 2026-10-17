@@ -11,6 +11,7 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorState } from '../components/ui/ErrorState'
 import { Notice } from '../components/ui/Notice'
 import { Page, PageHeader } from '../components/ui/Page'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { useExpenses } from '../hooks/useExpenses'
 import { getErrorMessage } from '../services/apiError'
@@ -27,6 +28,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import type { Expense, SortField } from '../types/domain'
 
 export function ExpensesPage() {
+  useDocumentTitle('Expenses')
   const dispatch = useAppDispatch()
   const filters = useAppSelector(selectExpenseFilters)
   const query = useAppSelector(selectExpenseQuery)

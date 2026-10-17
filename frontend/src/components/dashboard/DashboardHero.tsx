@@ -6,6 +6,15 @@ import { formatMoney, formatNumber, splitMoney } from '../../lib/format'
 import type { MonthlySummary } from '../../types/domain'
 import { ProgressBar, remainingText, StatusBadge } from '../budget/BudgetProgress'
 
+// Very large totals get a smaller figure so they never push the page wider.
+function figureSize(value: string): string {
+  if (value.length <= 9) {
+    return 'text-5xl sm:text-6xl'
+  }
+
+  return value.length <= 13 ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl'
+}
+
 // The loud moment of the dashboard: the month's spending as one large figure,
 // its place in the budget, and the supporting numbers beneath.
 export function DashboardHero({
@@ -37,12 +46,14 @@ export function DashboardHero({
       <p className="relative text-sm text-ink-3" id="hero-label">
         Spent in {monthLabel}
       </p>
-      <p className="relative mt-2 font-display text-5xl font-semibold tabular-nums sm:text-6xl">
-        <span aria-hidden="true">
-          <span className="mr-2 text-2xl font-medium text-ink-3 sm:text-3xl">
+      <p
+        className={`relative mt-2 font-display font-semibold tabular-nums ${figureSize(money.value)}`}
+      >
+        <span aria-hidden="true" className="flex flex-wrap items-baseline gap-x-3">
+          <span className="text-[0.5em] font-medium text-ink-3">
             {money.currency}
           </span>
-          {shown}
+          <span>{shown}</span>
         </span>
         <span className="sr-only">{formatMoney(summary.totalSpent)}</span>
       </p>

@@ -111,49 +111,53 @@ export function ExpenseList({
 
   return (
     <>
-      <table className="hidden w-full text-left text-sm md:table">
-        <thead className="border-b border-line text-ink-3">
-          <tr>
-            <SortHeader field="date" label="Date" {...sortProps} />
-            <th className="py-3 pr-4 font-medium">Title</th>
-            <th className="py-3 pr-4 font-medium">Category</th>
-            <th className="py-3 pr-4 font-medium">Payment</th>
-            <SortHeader align="right" field="amount" label="Amount" {...sortProps} />
-            <th className="py-3">
-              <span className="sr-only">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenses.map((expense) => (
-            <tr
-              className="border-b border-line transition-colors duration-150 hover:bg-surface"
-              key={expense.id}
-            >
-              <td className="py-3 pr-4 whitespace-nowrap text-ink-2">
-                {formatDate(expense.expenseDate)}
-              </td>
-              <td className="max-w-[18rem] py-3 pr-4 font-medium">
-                <span className="block truncate">{expense.title}</span>
-              </td>
-              <td className="py-3 pr-4">
-                <CategoryPill name={expense.category.name} />
-              </td>
-              <td className="py-3 pr-4 text-ink-2">
-                {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
-              </td>
-              <td className="py-3 pr-4 text-right font-medium">
-                <Money amount={expense.amount} />
-              </td>
-              <td className="py-2">
-                <RowActions expense={expense} onDelete={onDelete} />
-              </td>
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-line text-ink-3">
+            <tr>
+              <SortHeader field="date" label="Date" {...sortProps} />
+              <th className="py-3 pr-4 font-medium">Title</th>
+              <th className="py-3 pr-4 font-medium">Category</th>
+              <th className="hidden py-3 pr-4 font-medium lg:table-cell">Payment</th>
+              <SortHeader align="right" field="amount" label="Amount" {...sortProps} />
+              <th className="py-3">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {expenses.map((expense) => (
+              <tr
+                className="border-b border-line transition-colors duration-150 hover:bg-surface"
+                key={expense.id}
+              >
+                <td className="py-3 pr-4 whitespace-nowrap text-ink-2">
+                  {formatDate(expense.expenseDate)}
+                </td>
+                <td className="py-3 pr-4 font-medium">
+                  <span className="block max-w-[16rem] truncate lg:max-w-[20rem]">
+                    {expense.title}
+                  </span>
+                </td>
+                <td className="py-3 pr-4">
+                  <CategoryPill name={expense.category.name} />
+                </td>
+                <td className="hidden py-3 pr-4 text-ink-2 lg:table-cell">
+                  {PAYMENT_METHOD_LABELS[expense.paymentMethod]}
+                </td>
+                <td className="py-3 pr-4 text-right font-medium">
+                  <Money amount={expense.amount} />
+                </td>
+                <td className="py-2">
+                  <RowActions expense={expense} onDelete={onDelete} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <ul className="m-0 grid list-none gap-3 p-0 md:hidden">
+      <ul className="m-0 grid grid-cols-1 list-none gap-3 p-0 md:hidden">
         {expenses.map((expense) => (
           <li
             className="rounded-xl border border-line bg-surface p-4"
@@ -185,7 +189,7 @@ export function ExpenseListSkeleton() {
       <p className="sr-only" role="status">
         Loading expenses…
       </p>
-      <div className="grid gap-px">
+      <div className="grid grid-cols-1 gap-px">
         {[0, 1, 2, 3, 4, 5].map((row) => (
           <Skeleton className="h-14 w-full" key={row} />
         ))}

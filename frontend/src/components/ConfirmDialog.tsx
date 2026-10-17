@@ -27,12 +27,18 @@ export function ConfirmDialog({
 
   useEffect(() => {
     const dialog = dialogRef.current
+    const opener = document.activeElement as HTMLElement | null
 
     if (dialog && !dialog.open) {
       dialog.showModal()
     }
 
-    return () => dialog?.close()
+    return () => {
+      dialog?.close()
+      // The dialog is unmounted to close it, so hand focus back to the control
+      // that opened it (unless that control is gone, as after a delete).
+      opener?.focus()
+    }
   }, [])
 
   return (
@@ -51,7 +57,7 @@ export function ConfirmDialog({
       <h2 className="m-0 font-display text-xl font-semibold" id="confirm-dialog-title">
         {title}
       </h2>
-      <p className="mt-2 text-ink-2">{message}</p>
+      <p className="mt-2 text-ink-2 [overflow-wrap:anywhere]">{message}</p>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <div className="mt-6 flex justify-end gap-2">
         <Button disabled={isBusy} onClick={onCancel} variant="secondary">

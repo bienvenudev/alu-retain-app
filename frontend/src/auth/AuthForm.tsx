@@ -16,6 +16,7 @@ import {
   signUpSchema,
 } from '../lib/authSchemas'
 import { ApiError, getErrorMessage } from '../services/apiError'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useAuth } from './AuthContext'
 
 interface AuthFormProps {
@@ -26,6 +27,7 @@ type AuthFormValues = SignInValues & Partial<Pick<SignUpValues, 'name'>>
 
 export function AuthForm({ mode }: AuthFormProps) {
   const isSignUp = mode === 'signup'
+  useDocumentTitle(isSignUp ? 'Create account' : 'Sign in')
   const { isAuthenticated, isLoading, signIn, signUp } = useAuth()
   const location = useLocation()
   const [formError, setFormError] = useState<string | null>(null)
@@ -69,7 +71,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   })
 
   return (
-    <main className="relative isolate grid min-h-screen place-items-center overflow-hidden px-4 py-10">
+    <main className="relative isolate grid grid-cols-1 min-h-screen place-items-center overflow-hidden px-4 py-10">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--color-accent)_28%,transparent),transparent_65%)]"
@@ -95,7 +97,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           >
             <span
               aria-hidden="true"
-              className="grid size-9 place-items-center rounded-lg bg-accent text-lg font-bold text-on-accent"
+              className="grid grid-cols-1 size-9 place-items-center rounded-lg bg-accent text-lg font-bold text-on-accent"
             >
               R
             </span>
@@ -112,7 +114,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 : 'Sign in to see where your money went this month.'}
             </p>
 
-            <form className="mt-7 grid gap-4" noValidate onSubmit={submit}>
+            <form className="mt-7 grid grid-cols-1 gap-4" noValidate onSubmit={submit}>
               {isSignUp && (
                 <FormField error={errors.name?.message} label="Name">
                   <input
@@ -132,7 +134,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                   {...register('email')}
                 />
               </FormField>
-              <div className="grid gap-1.5">
+              <div className="grid grid-cols-1 gap-1.5">
                 <FormField error={errors.password?.message} label="Password">
                   <PasswordInput
                     autoComplete={isSignUp ? 'new-password' : 'current-password'}

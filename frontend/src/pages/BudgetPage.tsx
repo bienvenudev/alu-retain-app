@@ -10,11 +10,13 @@ import { Notice } from '../components/ui/Notice'
 import { Page, PageHeader } from '../components/ui/Page'
 import { Panel } from '../components/ui/Panel'
 import { Skeleton } from '../components/ui/Skeleton'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useMonthlySummary } from '../hooks/useMonthlySummary'
 import { useSelectedMonth } from '../month/SelectedMonthContext'
 import { budgetsService } from '../services/budgetsService'
 
 export function BudgetPage() {
+  useDocumentTitle('Budget')
   const { month, year } = useSelectedMonth()
   const { reload, state } = useMonthlySummary(year, month)
   const [notice, setNotice] = useState<string | null>(null)
@@ -38,7 +40,7 @@ export function BudgetPage() {
       />
 
       {state.status === 'loading' && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <p className="sr-only" role="status">
             Loading your budget…
           </p>
@@ -64,7 +66,7 @@ export function BudgetPage() {
       )}
 
       {state.status === 'success' && (
-        <div className="grid items-start gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
           <Panel>
             <h2 className="font-display text-xl font-semibold">
               Budget for {monthLabel}

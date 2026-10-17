@@ -8,6 +8,7 @@ import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { Page, PageHeader } from '../components/ui/Page'
 import { Panel } from '../components/ui/Panel'
 import { Skeleton } from '../components/ui/Skeleton'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useAsyncData } from '../hooks/useAsyncData'
 import { useCategories } from '../hooks/useCategories'
 import {
@@ -40,7 +41,7 @@ function FormShell({
 // Shaped like the form so the page does not jump when it loads.
 function FormSkeleton() {
   return (
-    <div className="grid gap-5">
+    <div className="grid grid-cols-1 gap-5">
       <p className="sr-only" role="status">
         Loading…
       </p>
@@ -56,7 +57,7 @@ function FormSkeleton() {
 
 function LoadError({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-1 gap-3">
       <ErrorMessage>{message}</ErrorMessage>
       <div className="flex flex-wrap gap-2">
         <Button onClick={onRetry}>Try again</Button>
@@ -69,6 +70,7 @@ function LoadError({ message, onRetry }: { message: string; onRetry: () => void 
 }
 
 export function NewExpensePage() {
+  useDocumentTitle('Add expense')
   const navigate = useNavigate()
   const categories = useCategories()
 
@@ -101,6 +103,7 @@ export function NewExpensePage() {
 }
 
 export function EditExpensePage() {
+  useDocumentTitle('Edit expense')
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const categories = useCategories()

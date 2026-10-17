@@ -41,7 +41,7 @@ export function BudgetForm({ initialAmount, onSubmit }: BudgetFormProps) {
   })
 
   return (
-    <form className="grid gap-4" noValidate onSubmit={submit}>
+    <form className="grid grid-cols-1 gap-4" noValidate onSubmit={submit}>
       <FormField error={errors.amount?.message} label="Monthly budget">
         <AmountInput placeholder="e.g. 600000" {...register('amount')} />
       </FormField>

@@ -12,8 +12,8 @@ export function Money({
   const { currency, value } = splitMoney(amount)
 
   return (
-    <span className={`whitespace-nowrap tabular-nums ${className}`}>
-      <span className="mr-[0.3em] text-[max(0.6em,0.75rem)] font-medium text-ink-3">
+    <span className={`tabular-nums [overflow-wrap:anywhere] ${className}`}>
+      <span className="mr-[0.3em] text-[max(0.6em,0.75rem)] font-medium whitespace-nowrap text-ink-3">
         {currency}
       </span>
       {value}

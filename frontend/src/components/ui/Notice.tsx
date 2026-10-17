@@ -22,7 +22,7 @@ export function Notice({
       role={tone === 'success' ? 'status' : 'alert'}
     >
       <Icon aria-hidden="true" className="size-4 shrink-0" />
-      <span className="flex-1">{children}</span>
+      <span className="flex-1 [overflow-wrap:anywhere]">{children}</span>
       {onDismiss && (
         <button
           aria-label="Dismiss message"

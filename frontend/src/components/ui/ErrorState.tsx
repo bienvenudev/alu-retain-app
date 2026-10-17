@@ -14,9 +14,9 @@ export function ErrorState({
   title?: string
 }) {
   return (
-    <Panel className="grid justify-items-start gap-3" role="alert">
+    <Panel className="grid grid-cols-1 justify-items-start gap-3" role="alert">
       <h2 className="font-display text-lg font-semibold">{title}</h2>
-      <p className="text-ink-2">{message}</p>
+      <p className="text-ink-2 [overflow-wrap:anywhere]">{message}</p>
       <Button onClick={onRetry} variant="secondary">
         <RotateCw aria-hidden="true" className="size-4" />
         Try again

@@ -20,11 +20,11 @@ export function DashboardSkeleton() {
           ))}
         </div>
       </div>
-      <div className="mt-8 grid gap-8 lg:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {[0, 1].map((column) => (
           <div className="border-t border-line pt-6" key={column}>
             <Skeleton className="h-5 w-44" />
-            <div className="mt-5 grid gap-4">
+            <div className="mt-5 grid grid-cols-1 gap-4">
               {[0, 1, 2, 3].map((row) => (
                 <Skeleton className="h-9 w-full" key={row} />
               ))}

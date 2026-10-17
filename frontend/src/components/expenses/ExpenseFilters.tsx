@@ -116,7 +116,7 @@ export function ExpenseFilters() {
     filters.startDate > filters.endDate
 
   return (
-    <div className="mb-6 grid gap-3" role="search">
+    <div className="mb-6 grid grid-cols-1 gap-3" role="search">
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search
@@ -174,7 +174,7 @@ export function ExpenseFilters() {
             <SlidersHorizontal aria-hidden="true" className="size-4" />
             Filters
             {chips.length > 0 && (
-              <span className="grid size-5 place-items-center rounded-full bg-accent text-xs font-semibold text-on-accent">
+              <span className="grid grid-cols-1 size-5 place-items-center rounded-full bg-accent text-xs font-semibold text-on-accent">
                 {chips.length}
               </span>
             )}
@@ -184,7 +184,7 @@ export function ExpenseFilters() {
 
       {panelOpen && (
         <div
-          className="grid gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2 lg:grid-cols-3 motion-safe:animate-rise"
+          className="grid grid-cols-1 gap-3 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2 lg:grid-cols-3 motion-safe:animate-rise"
           id={panelId}
         >
           <FormField
@@ -289,7 +289,7 @@ export function ExpenseFilters() {
               {chip.label}
               <button
                 aria-label={`Remove filter: ${chip.label}`}
-                className="grid size-7 cursor-pointer place-items-center rounded-full text-ink-3 transition-colors duration-150 hover:bg-raised hover:text-ink pointer-coarse:size-9"
+                className="grid grid-cols-1 size-7 cursor-pointer place-items-center rounded-full text-ink-3 transition-colors duration-150 hover:bg-raised hover:text-ink pointer-coarse:size-9"
                 onClick={chip.onRemove}
                 type="button"
               >

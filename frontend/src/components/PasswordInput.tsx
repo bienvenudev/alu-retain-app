@@ -22,7 +22,7 @@ export const PasswordInput = forwardRef<
       <button
         aria-label={visible ? 'Hide password' : 'Show password'}
         aria-pressed={visible}
-        className="absolute inset-y-0 right-0 grid w-11 cursor-pointer place-items-center rounded-r-lg text-ink-3 transition-colors duration-150 hover:text-ink"
+        className="absolute inset-y-0 right-0 grid grid-cols-1 w-11 cursor-pointer place-items-center rounded-r-lg text-ink-3 transition-colors duration-150 hover:text-ink"
         onClick={() => setVisible((current) => !current)}
         type="button"
       >

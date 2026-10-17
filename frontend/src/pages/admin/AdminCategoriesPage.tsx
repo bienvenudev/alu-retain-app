@@ -7,12 +7,14 @@ import { ErrorState } from '../../components/ui/ErrorState'
 import { Notice } from '../../components/ui/Notice'
 import { Panel } from '../../components/ui/Panel'
 import { Skeleton } from '../../components/ui/Skeleton'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAdminCategories } from '../../hooks/useAdminCategories'
 import { getErrorMessage } from '../../services/apiError'
 import { categoriesService } from '../../services/categoriesService'
 import { type CategoryWithCount, UNCATEGORIZED_NAME } from '../../types/domain'
 
 export function AdminCategoriesPage() {
+  useDocumentTitle('Admin categories')
   const { reload, state } = useAdminCategories()
   const [notice, setNotice] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -65,7 +67,7 @@ export function AdminCategoriesPage() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <Panel>
         <h2 className="font-display text-xl font-semibold">New category</h2>
         <p className="mt-1 mb-4 text-ink-2">
@@ -87,7 +89,7 @@ export function AdminCategoriesPage() {
             Loading categories…
           </p>
           <Skeleton className="h-6 w-40" />
-          <div className="mt-5 grid gap-3">
+          <div className="mt-5 grid grid-cols-1 gap-3">
             {[0, 1, 2, 3, 4].map((row) => (
               <Skeleton className="h-12 w-full" key={row} />
             ))}
