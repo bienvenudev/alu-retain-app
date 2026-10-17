@@ -1,10 +1,12 @@
 import { useState } from 'react'
 
+import { CategoryList } from '../../components/admin/CategoryList'
 import { CategoryNameForm } from '../../components/admin/CategoryNameForm'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
-import { Button } from '../../components/ui/Button'
-import { ErrorMessage } from '../../components/ui/ErrorMessage'
+import { ErrorState } from '../../components/ui/ErrorState'
 import { Notice } from '../../components/ui/Notice'
+import { Panel } from '../../components/ui/Panel'
+import { Skeleton } from '../../components/ui/Skeleton'
 import { useAdminCategories } from '../../hooks/useAdminCategories'
 import { getErrorMessage } from '../../services/apiError'
 import { categoriesService } from '../../services/categoriesService'
@@ -64,100 +66,65 @@ export function AdminCategoriesPage() {
 
   return (
     <div className="grid gap-6">
-      <section aria-labelledby="add-category">
-        <h2 className="mb-3 text-lg font-bold" id="add-category">
-          Add category
-        </h2>
+      <Panel>
+        <h2 className="font-display text-xl font-semibold">New category</h2>
+        <p className="mt-1 mb-4 text-ink-2">
+          Categories are shared by everyone. Names must be unique.
+        </p>
         <CategoryNameForm
           clearOnSuccess
           label="Category name"
           onSubmit={handleCreate}
           submitLabel="Add category"
         />
-      </section>
+      </Panel>
 
       {notice && <Notice onDismiss={() => setNotice(null)}>{notice}</Notice>}
 
-      <section aria-labelledby="all-categories">
-        <h2 className="mb-3 text-lg font-bold" id="all-categories">
-          All categories
-        </h2>
-
-        {state.status === 'loading' && (
-          <p aria-live="polite" className="text-ink-2" role="status">
+      {state.status === 'loading' && (
+        <Panel>
+          <p className="sr-only" role="status">
             Loading categories…
           </p>
-        )}
-
-        {state.status === 'error' && (
-          <div className="grid justify-start gap-3">
-            <ErrorMessage>{state.message}</ErrorMessage>
-            <Button onClick={reload}>Try again</Button>
+          <Skeleton className="h-6 w-40" />
+          <div className="mt-5 grid gap-3">
+            {[0, 1, 2, 3, 4].map((row) => (
+              <Skeleton className="h-12 w-full" key={row} />
+            ))}
           </div>
-        )}
+        </Panel>
+      )}
 
-        {state.status === 'success' && (
-          <ul className="m-0 grid list-none gap-2 p-0">
-            {state.data.map((category) => {
-              const isProtected = category.name === UNCATEGORIZED_NAME
+      {state.status === 'error' && (
+        <ErrorState
+          message={state.message}
+          onRetry={reload}
+          title="We could not load the categories"
+        />
+      )}
 
-              return (
-                <li
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line p-3"
-                  key={category.id}
-                >
-                  {editingId === category.id ? (
-                    <div className="flex-1">
-                      <CategoryNameForm
-                        initialName={category.name}
-                        label="Category name"
-                        onCancel={() => setEditingId(null)}
-                        onSubmit={(name) => handleRename(category.id, name)}
-                        submitLabel="Save"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        <p className="font-medium">{category.name}</p>
-                        <p className="text-sm text-ink-3">
-                          {category.expenseCount}{' '}
-                          {category.expenseCount === 1 ? 'expense' : 'expenses'}
-                          {isProtected && ' · Default category'}
-                        </p>
-                      </div>
-                      {!isProtected && (
-                        <div className="flex gap-2">
-                          <Button
-                            aria-label={`Rename ${category.name}`}
-                            onClick={() => setEditingId(category.id)}
-                            size="sm"
-                            variant="secondary"
-                          >
-                            Rename
-                          </Button>
-                          <Button
-                            aria-label={`Delete ${category.name}`}
-                            onClick={() => setPendingDelete(category)}
-                            size="sm"
-                            variant="danger"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </section>
+      {state.status === 'success' && (
+        <Panel>
+          <h2 className="mb-2 font-display text-xl font-semibold">
+            All categories{' '}
+            <span className="text-base font-normal text-ink-3">
+              {state.data.length}
+            </span>
+          </h2>
+          <CategoryList
+            categories={state.data}
+            editingId={editingId}
+            onCancelEdit={() => setEditingId(null)}
+            onDelete={setPendingDelete}
+            onEdit={setEditingId}
+            onRename={handleRename}
+          />
+        </Panel>
+      )}
 
       {pendingDelete && (
         <ConfirmDialog
-          confirmLabel="Delete"
+          confirmLabel="Delete category"
           error={deleteError}
           isBusy={isDeleting}
           message={`“${pendingDelete.name}” will be deleted. Its ${pendingDelete.expenseCount} ${
@@ -165,7 +132,7 @@ export function AdminCategoriesPage() {
           } will be moved to ${UNCATEGORIZED_NAME}.`}
           onCancel={closeDeleteDialog}
           onConfirm={confirmDelete}
-          title="Delete category?"
+          title="Delete this category?"
         />
       )}
     </div>

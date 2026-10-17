@@ -1,27 +1,10 @@
 import { ButtonLink } from '../ui/Button'
 import { Money } from '../ui/Money'
+import { Stat } from '../ui/Stat'
 import { useCountUp } from '../../hooks/useCountUp'
 import { formatMoney, formatNumber, splitMoney } from '../../lib/format'
 import type { MonthlySummary } from '../../types/domain'
 import { ProgressBar, remainingText, StatusBadge } from '../budget/BudgetProgress'
-
-function Stat({
-  children,
-  hint,
-  label,
-}: {
-  children: React.ReactNode
-  hint?: string
-  label: string
-}) {
-  return (
-    <div className="min-w-0">
-      <dt className="text-sm text-ink-3">{label}</dt>
-      <dd className="mt-1 text-lg font-semibold">{children}</dd>
-      {hint && <p className="mt-0.5 truncate text-sm text-ink-3">{hint}</p>}
-    </div>
-  )
-}
 
 // The loud moment of the dashboard: the month's spending as one large figure,
 // its place in the budget, and the supporting numbers beneath.
