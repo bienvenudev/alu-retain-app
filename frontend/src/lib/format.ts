@@ -29,3 +29,24 @@ export function todayIso(): string {
 
   return `${now.getFullYear()}-${month}-${day}`
 }
+
+// Splits "RWF 12,500" into the currency code and the figure, so the code can be
+// shown small and muted beside a large number.
+export function splitMoney(amount: string): { currency: string; value: string } {
+  let currency = 'RWF'
+  let value = ''
+
+  for (const part of currencyFormatter.formatToParts(Number(amount))) {
+    if (part.type === 'currency') {
+      currency = part.value
+    } else if (part.type !== 'literal') {
+      value += part.value
+    }
+  }
+
+  return { currency, value }
+}
+
+export function formatNumber(value: number): string {
+  return new Intl.NumberFormat('en-US').format(value)
+}

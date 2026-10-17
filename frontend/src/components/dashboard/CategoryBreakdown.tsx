@@ -1,6 +1,6 @@
-import { formatMoney } from '../../lib/format'
 import { toCents } from '../../lib/money'
 import type { CategoryTotal } from '../../types/domain'
+import { Money } from '../ui/Money'
 
 export function CategoryBreakdown({
   items,
@@ -12,26 +12,29 @@ export function CategoryBreakdown({
   const totalCents = toCents(totalSpent)
 
   return (
-    <ul className="m-0 grid list-none gap-3 p-0">
+    <ul className="m-0 grid list-none gap-4 p-0">
       {items.map(({ category, count, total }) => {
         const share = totalCents > 0 ? (toCents(total) / totalCents) * 100 : 0
 
         return (
           <li key={category.id}>
-            <div className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="font-medium">
-                {category.name}{' '}
-                <span className="font-normal text-ink-3">
-                  ({count} {count === 1 ? 'expense' : 'expenses'})
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="min-w-0 truncate font-medium">
+                {category.name}
+                <span className="ml-2 text-sm font-normal text-ink-3">
+                  {count}
                 </span>
-              </span>
-              <span className="font-medium whitespace-nowrap tabular-nums">
-                {formatMoney(total)}
-              </span>
+              </p>
+              <p className="flex shrink-0 items-baseline gap-3">
+                <span className="text-sm text-ink-3 tabular-nums">
+                  {Math.round(share)}%
+                </span>
+                <Money amount={total} className="font-medium" />
+              </p>
             </div>
             <div
               aria-hidden="true"
-              className="mt-1 h-2 overflow-hidden rounded-full bg-raised"
+              className="mt-2 h-1.5 overflow-hidden rounded-full bg-raised"
             >
               <div
                 className="h-full rounded-full bg-accent-ink"

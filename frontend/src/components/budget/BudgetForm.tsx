@@ -41,7 +41,7 @@ export function BudgetForm({ initialAmount, onSubmit }: BudgetFormProps) {
   })
 
   return (
-    <form className="grid max-w-sm gap-4" noValidate onSubmit={submit}>
+    <form className="grid gap-4" noValidate onSubmit={submit}>
       <FormField error={errors.amount?.message} label="Monthly budget (RWF)">
         <input
           aria-invalid={errors.amount ? true : undefined}
