@@ -7,7 +7,7 @@ administrator manages expense categories and sees platform-wide insights.
 ## Live demo
 
 - **App:** <https://alu-retain-app-seven.vercel.app>
-- **API:** <https://retain-api-w0lz.onrender.com/api> (health check: `/api/health`)
+- **API:** <https://retain-api-w0lz.onrender.com/api/health> (health check: `/api/health`)
 
 | Role  | Email              | Password    | Notes                                         |
 | ----- | ------------------ | ----------- | --------------------------------------------- |
