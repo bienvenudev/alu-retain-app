@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, ArrowUpDown, Pencil, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { formatDate } from '../../lib/format'
 import {
@@ -10,6 +11,7 @@ import {
 import { Button, ButtonLink } from '../ui/Button'
 import { Money } from '../ui/Money'
 import { Skeleton } from '../ui/Skeleton'
+import { CategoryPill } from './CategoryPill'
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -47,14 +49,6 @@ function RowActions({
         <Trash2 aria-hidden="true" className="size-4" />
       </Button>
     </div>
-  )
-}
-
-function CategoryPill({ name }: { name: string }) {
-  return (
-    <span className="inline-block max-w-full truncate rounded-full bg-raised px-2.5 py-0.5 text-xs font-medium text-ink-2">
-      {name}
-    </span>
   )
 }
 
@@ -135,9 +129,12 @@ export function ExpenseList({
                   {formatDate(expense.expenseDate)}
                 </td>
                 <td className="py-3 pr-4 font-medium">
-                  <span className="block max-w-[16rem] truncate lg:max-w-[20rem]">
+                  <Link
+                    className="block max-w-[16rem] truncate text-ink no-underline transition-colors duration-150 hover:text-accent-ink lg:max-w-[20rem]"
+                    to={`/expenses/${expense.id}`}
+                  >
                     {expense.title}
-                  </span>
+                  </Link>
                 </td>
                 <td className="py-3 pr-4">
                   <CategoryPill name={expense.category.name} />
@@ -164,7 +161,12 @@ export function ExpenseList({
             key={expense.id}
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="min-w-0 truncate font-medium">{expense.title}</p>
+              <Link
+                className="min-w-0 truncate font-medium text-ink no-underline transition-colors duration-150 hover:text-accent-ink"
+                to={`/expenses/${expense.id}`}
+              >
+                {expense.title}
+              </Link>
               <Money amount={expense.amount} className="shrink-0 font-medium" />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-ink-3">

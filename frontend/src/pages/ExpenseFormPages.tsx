@@ -1,8 +1,8 @@
-import { ChevronLeft } from 'lucide-react'
 import { type PropsWithChildren, useCallback } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { ExpenseForm } from '../components/expenses/ExpenseForm'
+import { BackLink } from '../components/ui/BackLink'
 import { Button, ButtonLink } from '../components/ui/Button'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { Page, PageHeader } from '../components/ui/Page'
@@ -25,13 +25,7 @@ function FormShell({
 }: PropsWithChildren<{ description?: string; title: string }>) {
   return (
     <Page>
-      <Link
-        className="mb-4 inline-flex items-center gap-1 text-sm text-ink-3 no-underline transition-colors duration-150 hover:text-ink"
-        to="/expenses"
-      >
-        <ChevronLeft aria-hidden="true" className="size-4" />
-        Expenses
-      </Link>
+      <BackLink to="/expenses">Expenses</BackLink>
       <PageHeader description={description} title={title} />
       <Panel>{children}</Panel>
     </Page>

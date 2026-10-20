@@ -24,7 +24,7 @@ export function PageHeader({
   return (
     <header className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div>
-        <h1 className="font-display text-3xl leading-tight font-semibold sm:text-4xl">
+        <h1 className="font-display text-3xl leading-tight font-semibold [overflow-wrap:anywhere] sm:text-4xl">
           {title}
         </h1>
         {description && (

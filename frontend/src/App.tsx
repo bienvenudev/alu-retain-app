@@ -18,6 +18,7 @@ import { AdminInsightsPage } from './pages/admin/AdminInsightsPage'
 import { AdminLayout } from './pages/admin/AdminLayout'
 import { BudgetPage } from './pages/BudgetPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { ExpenseDetailPage } from './pages/ExpenseDetailPage'
 import { EditExpensePage, NewExpensePage } from './pages/ExpenseFormPages'
 import { ExpensesPage } from './pages/ExpensesPage'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
@@ -175,6 +176,7 @@ export function App() {
             <Route element={<DashboardPage />} path="dashboard" />
             <Route element={<ExpensesPage />} path="expenses" />
             <Route element={<NewExpensePage />} path="expenses/new" />
+            <Route element={<ExpenseDetailPage />} path="expenses/:id" />
             <Route element={<EditExpensePage />} path="expenses/:id/edit" />
             <Route element={<BudgetPage />} path="budget" />
             <Route element={<AdminRoute />}>
